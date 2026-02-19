@@ -271,6 +271,85 @@
           </label>
         </div>
       </div>
+      <!-- EXPORTAR -->
+      <div class="settings-data-card" id="cardExportar">
+  <div class="settings-data-header">
+    <div class="settings-data-icon export-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+        <path d="M288 32C288 14.3 302.3 0 320 0C337.7 0 352 14.3 352 32L352 294.1L438.6 207.4C451.1 194.9 471.4 194.9 483.9 207.4C496.4 219.9 496.4 240.2 483.9 252.7L342.6 394C336.6 400 328.5 403.4 320 403.4C311.5 403.4 303.4 400 297.4 394L156.1 252.7C143.6 240.2 143.6 219.9 156.1 207.4C168.6 194.9 188.9 194.9 201.4 207.4L288 294.1L288 32zM64 352C81.7 352 96 366.3 96 384L96 512C96 529.7 110.3 544 128 544L512 544C529.7 544 544 529.7 544 512L544 384C544 366.3 558.3 352 576 352C593.7 352 608 366.3 608 384L608 512C608 564.1 565.9 608 512 608L128 608C74.1 608 32 564.1 32 512L32 384C32 366.3 46.3 352 64 352z"/>
+      </svg>
+    </div>
+    <div class="settings-data-info">
+      <strong>Exportar meus dados</strong>
+      <span>Salva seus animes, perfil e estatísticas em um arquivo</span>
+    </div>
+  </div>
+  <div class="settings-data-body">
+    <button class="data-action-btn btn-exportar" id="btnExportarDados">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+        <path d="M288 32C288 14.3 302.3 0 320 0C337.7 0 352 14.3 352 32L352 294.1L438.6 207.4C451.1 194.9 471.4 194.9 483.9 207.4C496.4 219.9 496.4 240.2 483.9 252.7L342.6 394C336.6 400 328.5 403.4 320 403.4C311.5 403.4 303.4 400 297.4 394L156.1 252.7C143.6 240.2 143.6 219.9 156.1 207.4C168.6 194.9 188.9 194.9 201.4 207.4L288 294.1L288 32zM64 352C81.7 352 96 366.3 96 384L96 512C96 529.7 110.3 544 128 544L512 544C529.7 544 544 529.7 544 512L544 384C544 366.3 558.3 352 576 352C593.7 352 608 366.3 608 384L608 512C608 564.1 565.9 608 512 608L128 608C74.1 608 32 564.1 32 512L32 384C32 366.3 46.3 352 64 352z"/>
+      </svg>
+      Exportar agora
+    </button>
+
+    <div class="settings-data-divider"></div>
+
+    <!-- Toggle agendamento semanal -->
+    <div class="settings-schedule-row" id="scheduleRow">
+      <div class="schedule-toggle-label">
+        <div class="schedule-clock-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+            <path d="M528 320C528 434.9 434.9 528 320 528C205.1 528 112 434.9 112 320C112 205.1 205.1 112 320 112C434.9 112 528 205.1 528 320zM64 320C64 461.4 178.6 576 320 576C461.4 576 576 461.4 576 320C576 178.6 461.4 64 320 64C178.6 64 64 178.6 64 320zM296 184L296 320C296 328 300 335.5 306.7 340L402.7 404C413.7 411.4 428.6 408.4 436 397.3C443.4 386.2 440.4 371.4 429.3 364L344 307.2L344 184C344 170.7 333.3 160 320 160C306.7 160 296 170.7 296 184z"/>
+          </svg>
+        </div>
+        <div class="schedule-toggle-text">
+          <strong>Agendamento semanal</strong>
+          <span>Exportar automaticamente toda semana</span>
+        </div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="scheduleToggle">
+        <span class="toggle-track"></span>
+      </label>
+    </div>
+
+    <!-- Caixinha que aparece quando ativado -->
+    <div class="schedule-toast" id="scheduleToast">
+      <span class="schedule-toast-icon">🗓️</span>
+      <span>Seus dados serão agendados semanalmente para serem exportados!</span>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORTAR -->
+<div class="settings-data-card" id="cardImportar">
+  <div class="settings-data-header">
+    <div class="settings-data-icon import-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+        <path d="M352 608C352 625.7 337.7 640 320 640C302.3 640 288 625.7 288 608L288 345.9L201.4 432.6C188.9 445.1 168.6 445.1 156.1 432.6C143.6 420.1 143.6 399.8 156.1 387.3L297.4 246C303.4 240 311.5 236.6 320 236.6C328.5 236.6 336.6 240 342.6 246L483.9 387.3C496.4 399.8 496.4 420.1 483.9 432.6C471.4 445.1 451.1 445.1 438.6 432.6L352 345.9L352 608zM64 352C81.7 352 96 366.3 96 384L96 512C96 529.7 110.3 544 128 544L512 544C529.7 544 544 529.7 544 512L544 384C544 366.3 558.3 352 576 352C593.7 352 608 366.3 608 384L608 512C608 564.1 565.9 608 512 608L128 608C74.1 608 32 564.1 32 512L32 384C32 366.3 46.3 352 64 352z"/>
+      </svg>
+    </div>
+    <div class="settings-data-info">
+      <strong>Na verdade, quero trazer meus dados</strong>
+      <span>Restaura sua lista, perfil e histórico a partir de um arquivo</span>
+    </div>
+  </div>
+  <div class="settings-data-body">
+    <input type="file" id="importFileInput" accept=".json" style="display:none">
+    <label for="importFileInput" class="import-label">
+      <div class="data-action-btn btn-importar">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+          <path d="M352 608C352 625.7 337.7 640 320 640C302.3 640 288 625.7 288 608L288 345.9L201.4 432.6C188.9 445.1 168.6 445.1 156.1 432.6C143.6 420.1 143.6 399.8 156.1 387.3L297.4 246C303.4 240 311.5 236.6 320 236.6C328.5 236.6 336.6 240 342.6 246L483.9 387.3C496.4 399.8 496.4 420.1 483.9 432.6C471.4 445.1 451.1 445.1 438.6 432.6L352 345.9L352 608zM64 352C81.7 352 96 366.3 96 384L96 512C96 529.7 110.3 544 128 544L512 544C529.7 544 544 529.7 544 512L544 384C544 366.3 558.3 352 576 352C593.7 352 608 366.3 608 384L608 512C608 564.1 565.9 608 512 608L128 608C74.1 608 32 564.1 32 512L32 384C32 366.3 46.3 352 64 352z"/>
+        </svg>
+        Selecionar arquivo (.json)
+      </div>
+    </label>
+    <div class="import-success-badge" id="importSuccessBadge">
+      ✅ Dados importados com sucesso!
+    </div>
+  </div>
+</div>
+
       <div class="settings-actions">
         <button id="btnVoltarSettings">← Voltar</button>
         <button id="salvarSettings">Salvar alterações</button>
