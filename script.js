@@ -252,7 +252,26 @@ document.getElementById("capaFileInput").addEventListener("change", e => {
 
 // ======== MODAL ADD ========
 const modal = document.getElementById("modal");
-document.querySelector(".btn-add").addEventListener("click", () => modal.style.display = "flex");
+let tipoModal = "anime"; // "anime" ou "filme"
+
+function atualizarTipoModal(tipo) {
+  tipoModal = tipo;
+  const isFilme = tipo === "filme";
+  document.getElementById("tipoBtnAnime").classList.toggle("tipo-btn-ativo", !isFilme);
+  document.getElementById("tipoBtnFilme").classList.toggle("tipo-btn-ativo", isFilme);
+  document.getElementById("modalTitulo").textContent = isFilme ? "Adicionar Filme Anime" : "Adicionar Anime";
+  document.getElementById("labelNome").innerHTML = (isFilme ? "Nome do filme" : "Nome do anime") + ' <span class="campo-obrigatorio">*</span>';
+  document.getElementById("camposEpisodios").style.display = isFilme ? "none" : "";
+  document.getElementById("camposDuracao").style.display = isFilme ? "" : "none";
+}
+
+document.getElementById("tipoBtnAnime").addEventListener("click", () => atualizarTipoModal("anime"));
+document.getElementById("tipoBtnFilme").addEventListener("click", () => atualizarTipoModal("filme"));
+
+document.querySelector(".btn-add").addEventListener("click", () => {
+  atualizarTipoModal("anime");
+  modal.style.display = "flex";
+});
 document.getElementById("fechar").addEventListener("click", () => modal.style.display = "none");
 
 document.getElementById("totalEps").addEventListener("input", () => {
@@ -265,14 +284,16 @@ document.getElementById("salvar").addEventListener("click", () => {
   const capa = document.getElementById("capa").value.trim();
   const nota = document.getElementById("nota").value;
   const status = document.getElementById("status").value;
-  const totalEps = parseInt(document.getElementById("totalEps").value) || 0;
-  const assistidosEps = Math.min(parseInt(document.getElementById("assistidosEps").value) || 0, totalEps || 99999);
+  const isFilme = tipoModal === "filme";
+  const totalEps = isFilme ? 0 : (parseInt(document.getElementById("totalEps").value) || 0);
+  const assistidosEps = isFilme ? 0 : Math.min(parseInt(document.getElementById("assistidosEps").value) || 0, totalEps || 99999);
+  const duracao = isFilme ? (parseInt(document.getElementById("duracao").value) || 0) : 0;
   if (!nome || !capa || !nota) { alert("Preencha os campos obrigatórios!"); return; }
-  animes.push({ id: Date.now(), nome, nota, capa, status, observacao: "", totalEps, assistidosEps });
+  animes.push({ id: Date.now(), nome, nota, capa, status, observacao: "", totalEps, assistidosEps, tipo: isFilme ? "filme" : "anime", duracao });
   localStorage.setItem("animes", JSON.stringify(animes));
   renderizarAnimes();
   modal.style.display = "none";
-  ["nome","capa","nota","totalEps","assistidosEps"].forEach(id => document.getElementById(id).value = "");
+  ["nome","capa","nota","totalEps","assistidosEps","duracao"].forEach(id => { const el = document.getElementById(id); if (el) el.value = ""; });
 });
 
 // ======== MODAL DETALHE ========
@@ -290,6 +311,10 @@ function abrirDetalhe(anime) {
   document.getElementById("detalheObs").value = anime.observacao || "";
   document.getElementById("moverParaLista").value = anime.status;
 
+  // Badge filme
+  const filmeBadge = document.getElementById("detalheFilmeBadge");
+  filmeBadge.style.display = anime.tipo === "filme" ? "inline-flex" : "none";
+
   // Gêneros laterais
   const tagsEl = document.getElementById("detalheGenerosTags");
   if (anime.generos && anime.generos.length > 0) {
@@ -305,10 +330,14 @@ function abrirDetalhe(anime) {
 }
 
 function renderEpisodiosDetalhe(anime) {
+  const wrap = document.getElementById("detalheEpisodios");
+  if (anime.tipo === "filme") {
+    wrap.innerHTML = "";
+    return;
+  }
   const totalEps = parseInt(anime.totalEps) || 0;
   const assistidosEps = parseInt(anime.assistidosEps) || 0;
   const pct = totalEps > 0 ? Math.min(100, Math.round((assistidosEps / totalEps) * 100)) : 0;
-  const wrap = document.getElementById("detalheEpisodios");
   wrap.innerHTML = `
     <div class="eps-detalhe-row">
       <div class="eps-detalhe-field">
@@ -992,7 +1021,10 @@ document.getElementById("sdAddBtn").addEventListener("click", async () => {
   btn.textContent = "⏳ Traduzindo..."; btn.disabled = true;
   const sinopse = await traduzirTexto(sinopseOriginal);
 
-  animes.push({ id: Date.now(), nome: titulo, nota: parseFloat(nota).toFixed(1), capa, status, observacao: "", totalEps, assistidosEps, ano, studio, sinopse, generos });
+  const tipoApi = sdAnimeData.type || "";
+  const isFilmeApi = tipoApi === "Movie";
+  const duracao = isFilmeApi ? (sdAnimeData.duration ? parseInt(sdAnimeData.duration) || 0 : 0) : 0;
+  animes.push({ id: Date.now(), nome: titulo, nota: parseFloat(nota).toFixed(1), capa, status, observacao: "", totalEps, assistidosEps, ano, studio, sinopse, generos, tipo: isFilmeApi ? "filme" : "anime", duracao });
   localStorage.setItem("animes", JSON.stringify(animes));
   renderizarAnimes();
   btn.textContent = "✅ Adicionado!"; btn.style.background = "#4caf50";

@@ -120,9 +120,22 @@
   <!-- MODAL ADICIONAR -->
   <div class="modal-overlay" id="modal">
     <div class="modal">
-      <h2>Adicionar Anime</h2>
+
+      <!-- Toggle Anime / Filme Anime -->
+      <div class="modal-tipo-toggle">
+        <button class="tipo-btn tipo-btn-ativo" id="tipoBtnAnime">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM252.3 211.1C244.7 215.3 240 223.4 240 232L240 408C240 416.7 244.7 424.7 252.3 428.9C259.9 433.1 269.1 433 276.6 428.4L420.6 340.4C427.7 336 432.1 328.3 432.1 319.9C432.1 311.5 427.7 303.8 420.6 299.4L276.6 211.4C269.2 206.9 259.9 206.7 252.3 210.9z"/></svg>
+          Anime
+        </button>
+        <button class="tipo-btn" id="tipoBtnFilme">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M128 128C92.7 128 64 156.7 64 192L64 448C64 483.3 92.7 512 128 512L384 512C419.3 512 448 483.3 448 448L448 192C448 156.7 419.3 128 384 128L128 128zM496 400L569.5 458.8C573.7 462.2 578.9 464 584.3 464C597.4 464 608 453.4 608 440.3L608 199.7C608 186.6 597.4 176 584.3 176C578.9 176 573.7 177.8 569.5 181.2L496 240L496 400z"/></svg>
+          Filme Anime
+        </button>
+      </div>
+
+      <h2 id="modalTitulo">Adicionar Anime</h2>
       <div class="modal-field">
-        <label>Nome do anime <span class="campo-obrigatorio">*</span></label>
+        <label id="labelNome">Nome do anime <span class="campo-obrigatorio">*</span></label>
         <input type="text" id="nome" placeholder="Ex: Attack on Titan">
       </div>
       <div class="modal-field">
@@ -145,7 +158,9 @@
           <option value="paraAssistir">Para assistir</option>
         </select>
       </div>
-      <div class="modal-field-row">
+
+      <!-- Campos exclusivos de Anime (série) -->
+      <div class="modal-field-row" id="camposEpisodios">
         <div class="modal-field" style="flex:1">
           <label>Total de eps.</label>
           <input type="number" id="totalEps" placeholder="Ex: 24" min="0">
@@ -155,6 +170,13 @@
           <input type="number" id="assistidosEps" placeholder="Ex: 12" min="0">
         </div>
       </div>
+
+      <!-- Campo exclusivo de Filme -->
+      <div class="modal-field" id="camposDuracao" style="display:none">
+        <label>Duração (min)</label>
+        <input type="number" id="duracao" placeholder="Ex: 120" min="0">
+      </div>
+
       <div class="modal-botoes">
         <button id="fechar">Cancelar</button>
         <button id="salvar">Salvar</button>
@@ -174,6 +196,10 @@
       </button>
       <div class="imagem-container"><img id="detalheCapa" src=""></div>
       <h2 id="detalheNome"></h2>
+      <div id="detalheFilmeBadge" class="detalhe-filme-badge" style="display:none">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M128 128C92.7 128 64 156.7 64 192L64 448C64 483.3 92.7 512 128 512L384 512C419.3 512 448 483.3 448 448L448 192C448 156.7 419.3 128 384 128L128 128zM496 400L569.5 458.8C573.7 462.2 578.9 464 584.3 464C597.4 464 608 453.4 608 440.3L608 199.7C608 186.6 597.4 176 584.3 176C578.9 176 573.7 177.8 569.5 181.2L496 240L496 400z"/></svg>
+        Filme Anime
+      </div>
       <p id="detalheNota"></p>
       <div class="genero-tags-inline" id="detalheGenerosTags" style="display:none"></div>
 
