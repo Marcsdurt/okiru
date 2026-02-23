@@ -1214,6 +1214,60 @@ body.dark .share-close { background: #1e2035; color: #aaa; }
   margin: 0;
 }
 
+/* ── X Post Preview Overlay ── */
+#xPostPreviewOverlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.88);
+  backdrop-filter: blur(16px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 600;
+  padding: 20px;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+}
+.xpost-card-wrap {
+  /* Proporção 1004:1743 ≈ 9:15.63 — altura baseada na viewport */
+  height: calc(100vh - 160px);
+  max-height: 640px;
+  width: auto;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+  flex-shrink: 0;
+}
+.xpost-card {
+  height: 100%;
+  /* largura = altura * (1004/1743) */
+  width: calc((100vh - 160px) * 1004 / 1743);
+  max-width: calc(640px * 1004 / 1743);
+  background: linear-gradient(160deg, #1a1c2e 0%, #16182a 50%, #0f1117 100%);
+  position: relative;
+  overflow: hidden;
+  font-family: "Nunito", sans-serif;
+}
+.xpost-card::before {
+  content: "";
+  position: absolute; top: -80px; right: -80px;
+  width: 280px; height: 280px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(167,139,250,0.3) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+.xpost-card::after {
+  content: "";
+  position: absolute; bottom: -60px; left: -60px;
+  width: 240px; height: 240px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(108,122,224,0.25) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+.xpost-badge {
+  position: absolute; top: 16px; right: 14px; z-index: 15;
+  font-size: 16px; font-weight: 900; color: rgba(255,255,255,0.8);
+  font-family: serif;
+}
+
 /* ── Toast ── */
 #toastMsg {
   position: fixed; bottom: 90px; left: 50%;

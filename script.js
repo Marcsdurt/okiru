@@ -1,4 +1,3 @@
-
 // ======== TRADUÇÃO DE GÊNEROS ========
 const generosPT = {
   "Action": "Ação",
@@ -512,6 +511,56 @@ document.getElementById("shareBtnXPost").addEventListener("click", () => {
   if (!animeParaCompartilhar) return;
   const anime = animeParaCompartilhar;
   fecharShareMenu();
+  abrirXPostPreview(anime);
+});
+
+document.getElementById("xPostPreviewOverlay").addEventListener("click", e => {
+  if (e.target === document.getElementById("xPostPreviewOverlay")) fecharXPostPreview();
+});
+document.getElementById("xPostPreviewClose").addEventListener("click", fecharXPostPreview);
+
+function fecharXPostPreview() {
+  document.getElementById("xPostPreviewOverlay").style.display = "none";
+}
+
+function abrirXPostPreview(anime) {
+  window._lastAnimeXPost = anime;
+  const nota = parseFloat(anime.nota) || 0;
+  const estrelas = Math.round((nota / 10) * 5);
+  const strEstrelas = "★".repeat(estrelas) + "☆".repeat(5 - estrelas);
+  const ano    = anime.ano    ? String(anime.ano) : null;
+  const studio = anime.studio || null;
+  const sinopse = anime.sinopse || null;
+
+  const overlay = document.getElementById("xPostPreviewOverlay");
+  const card    = document.getElementById("xPostCard");
+
+  card.innerHTML = `
+    <div class="story-header">
+      <span class="story-header-icon">⛩️</span>
+      <span class="story-header-name">Okiru</span>
+    </div>
+    <span class="xpost-badge">𝕏</span>
+    <div class="story-capa-wrap">
+      <img src="${anime.capa}" class="story-capa-img" onerror="this.style.display='none'">
+      <div class="story-capa-fade"></div>
+    </div>
+    <div class="story-content">
+      <h2 class="story-anime-nome">${anime.nome}</h2>
+      ${ano || studio ? `<p class="story-meta">${[ano, studio ? '🎬 ' + studio : null].filter(Boolean).join('  ·  ')}</p>` : ''}
+      <p class="story-avaliacao">Minha avaliação: <strong>${nota}/10</strong></p>
+      <p class="story-estrelas">${strEstrelas}</p>
+      ${sinopse ? `<p class="story-sinopse">${sinopse}</p>` : ''}
+    </div>
+    <div class="story-footer">⛩️  okiru</div>
+  `;
+
+  overlay.style.display = "flex";
+}
+
+document.getElementById("xPostDownloadBtn").addEventListener("click", () => {
+  const anime = animeParaCompartilhar || window._lastAnimeXPost;
+  if (!anime) return;
   abrirXPostNova(anime);
 });
 
