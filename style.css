@@ -1026,6 +1026,9 @@ body.dark .busca-local-clear { background: #2a2d48; color: #a78bfa; }
 .share-opt-btn:hover { background: #eeeef8; border-color: rgba(108,122,224,0.3); transform: translateX(3px); }
 .share-opt-story { border-color: rgba(108,122,224,0.2); background: rgba(108,122,224,0.04); }
 .share-opt-story:hover { background: rgba(108,122,224,0.1); border-color: rgba(108,122,224,0.4); }
+.share-opt-xpost { border-color: rgba(0,0,0,0.15); background: rgba(0,0,0,0.03); }
+.share-opt-xpost:hover { background: rgba(0,0,0,0.08); border-color: rgba(0,0,0,0.3); }
+.share-opt-xpost .share-opt-icon { font-family: serif; font-weight: 900; font-size: 20px; }
 .share-opt-icon { font-size: 28px; flex-shrink: 0; }
 .share-opt-text { flex: 1; }
 .share-opt-text strong { display: block; font-size: 14px; font-weight: 800; color: #2d2f4a; }

@@ -1,3 +1,4 @@
+
 // ======== TRADUÇÃO DE GÊNEROS ========
 const generosPT = {
   "Action": "Ação",
@@ -506,6 +507,154 @@ document.getElementById("shareBtnStory").addEventListener("click", () => {
   fecharShareMenu();
   abrirStoryPreview(anime);
 });
+
+document.getElementById("shareBtnXPost").addEventListener("click", () => {
+  if (!animeParaCompartilhar) return;
+  const anime = animeParaCompartilhar;
+  fecharShareMenu();
+  abrirXPostNova(anime);
+});
+
+function abrirXPostNova(anime) {
+  const nota = parseFloat(anime.nota) || 0;
+  const estrelas = Math.round((nota / 10) * 5);
+  const strEstrelas = "★".repeat(estrelas) + "☆".repeat(5 - estrelas);
+  const ano    = anime.ano    ? String(anime.ano) : "";
+  const studio = anime.studio || "";
+  const sinopse = anime.sinopse || "";
+  const metaLine = [ano, studio ? "🎬 " + studio : ""].filter(Boolean).join("  ·  ");
+
+  // Proporção 1004x1743 → mantemos escala visual com width=502px (metade) para tela
+  // O card terá aspect-ratio 1004/1743 ≈ 0.576
+  const html = `<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Okiru — ${anime.nome} (Post X)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: #0a0a14;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 100vh;
+      font-family: 'Nunito', sans-serif;
+      padding: 20px;
+      gap: 16px;
+    }
+    p.instrucao {
+      color: rgba(255,255,255,0.5);
+      font-size: 13px; text-align: center;
+      font-family: 'Nunito', sans-serif;
+    }
+    /* Card com proporção 1004x1743 */
+    .card {
+      width: 502px;
+      height: 872px; /* 502 * 1743/1004 ≈ 872 */
+      background: linear-gradient(160deg, #1a1c2e 0%, #16182a 50%, #0f1117 100%);
+      border-radius: 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.8);
+    }
+    .card::before {
+      content: '';
+      position: absolute; top: -80px; right: -80px;
+      width: 320px; height: 320px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(167,139,250,0.3) 0%, transparent 70%);
+    }
+    .card::after {
+      content: '';
+      position: absolute; bottom: -60px; left: -60px;
+      width: 280px; height: 280px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(108,122,224,0.25) 0%, transparent 70%);
+    }
+    .header {
+      position: absolute; top: 0; left: 0; right: 0;
+      display: flex; align-items: center; justify-content: center;
+      gap: 10px; z-index: 10;
+      padding: 18px 0 14px;
+      background: rgba(15,17,23,0.6);
+      backdrop-filter: blur(8px);
+    }
+    .header-icon { font-size: 22px; }
+    .header-name { font-size: 22px; font-weight: 800; color: white; letter-spacing: 0.5px; }
+    .capa-wrap {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 55%; z-index: 1;
+    }
+    .capa-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .capa-fade {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 75%;
+      background: linear-gradient(to bottom, transparent 0%, #0f1117 100%);
+    }
+    .content {
+      position: absolute;
+      bottom: 52px; left: 0; right: 0;
+      padding: 0 28px; z-index: 5;
+    }
+    .nome {
+      font-size: 34px; font-weight: 900;
+      color: #fff; line-height: 1.15; margin-bottom: 8px;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+    }
+    .meta { font-size: 13px; color: #a78bfa; font-weight: 700; margin-bottom: 12px; }
+    .avaliacao { font-size: 17px; color: rgba(255,255,255,0.85); margin-bottom: 4px; }
+    .avaliacao strong { color: #fff; font-size: 20px; }
+    .estrelas { font-size: 26px; letter-spacing: 3px; color: #f59e0b; margin-bottom: 12px; }
+    .sinopse {
+      font-size: 13px; color: rgba(255,255,255,0.55);
+      line-height: 1.6;
+      display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical;
+      overflow: hidden;
+      -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+      mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+    }
+    .footer {
+      position: absolute; bottom: 16px; left: 0; right: 0;
+      text-align: center; z-index: 5;
+      font-size: 14px; font-weight: 800;
+      color: rgba(108,122,224,0.7); letter-spacing: 1px;
+    }
+    .x-badge {
+      position: absolute; top: 18px; right: 20px; z-index: 15;
+      font-size: 20px; font-weight: 900;
+      color: rgba(255,255,255,0.85);
+      font-family: 'Nunito', sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <p class="instrucao">Clique com botão direito na imagem → Salvar imagem<br>ou tire um screenshot 📸</p>
+  <div class="card">
+    <div class="header">
+      <span class="header-icon">⛩️</span>
+      <span class="header-name">Okiru</span>
+    </div>
+    <span class="x-badge">𝕏</span>
+    <div class="capa-wrap">
+      <img class="capa-img" src="${anime.capa}" onerror="this.style.display='none'">
+      <div class="capa-fade"></div>
+    </div>
+    <div class="content">
+      <h2 class="nome">${anime.nome}</h2>
+      ${metaLine ? `<p class="meta">${metaLine}</p>` : ""}
+      <p class="avaliacao">Minha avaliação: <strong>${nota}/10</strong></p>
+      <p class="estrelas">${strEstrelas}</p>
+      ${sinopse ? `<p class="sinopse">${sinopse}</p>` : ""}
+    </div>
+    <div class="footer">⛩️  okiru</div>
+  </div>
+</body>
+</html>`;
+
+  const blob = new Blob([html], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
+  window.open(url, "_blank");
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
 
 function abrirStoryPreview(anime) {
   window._lastAnimeStory = anime; // guarda para o botão de download
