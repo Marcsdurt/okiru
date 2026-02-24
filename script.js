@@ -1075,6 +1075,59 @@ function renderizarStats() {
       <p class="stats-tempo-eps">Baseado em ${animes.reduce((s,a) => s + (parseInt(a.assistidosEps)||0), 0)} episódios · ~24min cada</p>
     `;
   tempoEl.innerHTML = tempoMsg;
+
+  // ── Dados salvos ──
+  const storageEl = document.getElementById("statsStorage");
+  if (storageEl) {
+    // Calcula tamanho de todas as chaves do localStorage do Okiru
+    const keys = ["animes", "usuario", "okiru_tutorial_done"];
+    let totalBytes = 0;
+    const itens = [];
+    keys.forEach(key => {
+      const val = localStorage.getItem(key);
+      if (val !== null) {
+        const bytes = new Blob([val]).size;
+        totalBytes += bytes;
+        const labels = { animes: "Lista de animes", usuario: "Perfil do usuário", okiru_tutorial_done: "Tutorial" };
+        itens.push({ label: labels[key] || key, bytes });
+      }
+    });
+
+    const formatBytes = (b) => {
+      if (b >= 1024 * 1024) return (b / (1024 * 1024)).toFixed(2) + " MB";
+      if (b >= 1024)        return (b / 1024).toFixed(1) + " KB";
+      return b + " B";
+    };
+
+    // Limite estimado do localStorage (5MB)
+    const LIMIT = 5 * 1024 * 1024;
+    const pct = Math.min((totalBytes / LIMIT) * 100, 100).toFixed(1);
+
+    const cores = ["#6c7ae0", "#a78bfa", "#34d399"];
+    const barras = itens.map((item, i) => {
+      const p = ((item.bytes / LIMIT) * 100).toFixed(2);
+      return `
+        <div class="stats-storage-row">
+          <span class="stats-storage-label">${item.label}</span>
+          <div class="stats-genero-bar-wrap">
+            <div class="stats-genero-bar" style="width:${Math.max(p, 0.5)}%;background:${cores[i % cores.length]}"></div>
+          </div>
+          <span class="stats-storage-size">${formatBytes(item.bytes)}</span>
+        </div>`;
+    }).join("");
+
+    storageEl.innerHTML = `
+      <div class="stats-storage-total">
+        <span class="stats-storage-valor">${formatBytes(totalBytes)}</span>
+        <span class="stats-storage-de">de ~5 MB disponíveis</span>
+      </div>
+      <div class="stats-storage-bar-total-wrap">
+        <div class="stats-storage-bar-total" style="width:${pct}%"></div>
+      </div>
+      <p class="stats-storage-pct">${pct}% utilizado</p>
+      <div class="stats-storage-itens">${barras}</div>
+    `;
+  }
 }
 
 function voltarHome() {
