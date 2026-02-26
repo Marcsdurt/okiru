@@ -58,6 +58,14 @@
     return BADGES.filter(b => b.check(anime));
   }
 
+  // Retorna só as badges que o usuário marcou para compartilhar (ou todas se não houver seleção)
+  function getBadgesSelecionadas(anime) {
+    const todas = getBadgesDoAnime(anime);
+    const ids = anime._badgesSelecionadas;
+    if (!ids || ids.length === 0) return todas;
+    return todas.filter(b => ids.includes(b.id));
+  }
+
   /* ─────────────────────────────────
      MODAL DE DETALHE — Badge lateral
      (DOM normal da página — sem blob,
@@ -230,37 +238,37 @@
         // Chama o original primeiro (monta o card normalmente)
         _origPreview.call(this, anime);
 
-        const badges = getBadgesDoAnime(anime);
+        const badges = getBadgesSelecionadas(anime);
         if (badges.length === 0) return;
 
-        const badge   = badges[0];
-        const content = document.querySelector('#storyCard .story-content');
-        if (!content) return;
+        const capaWrap = document.querySelector('#storyCard .story-capa-wrap');
+        if (!capaWrap) return;
 
         // Remove badge anterior se houver (reabertura do modal)
-        const existing = content.querySelector('.story-badge-wrap');
+        const existing = capaWrap.querySelector('.story-badge-wrap');
         if (existing) existing.remove();
 
-        // Cria o elemento da badge — imagem normal no DOM da página
-        const fmtClass = badge.formato === 'redondo' ? ' badge--redondo' : ' badge--livre';
+        // Monta todas as badges lado a lado sobre a capa
         const wrap = document.createElement('div');
         wrap.className = 'story-badge-wrap';
-        wrap.innerHTML = `
-          <img
-            class="story-badge-img${fmtClass}"
-            src="${resolverUrlImg(badge.img)}"
-            alt="${badge.nome}"
-          >
-          <div class="story-badge-tag">${badge.nome}</div>
-        `;
 
-        // Insere ANTES do nome do anime
-        const nomeEl = content.querySelector('.story-anime-nome');
-        if (nomeEl) {
-          content.insertBefore(wrap, nomeEl);
-        } else {
-          content.prepend(wrap);
-        }
+        badges.forEach((badge, index) => {
+          const fmtClass = badge.formato === 'redondo' ? ' badge--redondo' : ' badge--livre';
+          const item = document.createElement('div');
+          item.className = 'story-badge-item';
+          item.style.animationDelay = (index * 0.12) + 's';
+          item.innerHTML = `
+            <img
+              class="story-badge-img${fmtClass}"
+              src="${resolverUrlImg(badge.img)}"
+              alt="${badge.nome}"
+            >
+            <div class="story-badge-tag">${badge.nome}</div>
+          `;
+          wrap.appendChild(item);
+        });
+
+        capaWrap.appendChild(wrap);
       };
     }
   }, 50);
@@ -277,34 +285,35 @@
       window.abrirXPostPreview = function (anime) {
         _origXPreview.call(this, anime);
 
-        const badges = getBadgesDoAnime(anime);
+        const badges = getBadgesSelecionadas(anime);
         if (badges.length === 0) return;
 
-        const badge   = badges[0];
-        const content = document.querySelector('#xPostCard .story-content');
-        if (!content) return;
+        const capaWrap = document.querySelector('#xPostCard .story-capa-wrap');
+        if (!capaWrap) return;
 
-        const existing = content.querySelector('.story-badge-wrap');
+        const existing = capaWrap.querySelector('.story-badge-wrap');
         if (existing) existing.remove();
 
-        const fmtClass = badge.formato === 'redondo' ? ' badge--redondo' : ' badge--livre';
         const wrap = document.createElement('div');
         wrap.className = 'story-badge-wrap';
-        wrap.innerHTML = `
-          <img
-            class="story-badge-img${fmtClass}"
-            src="${resolverUrlImg(badge.img)}"
-            alt="${badge.nome}"
-          >
-          <div class="story-badge-tag">${badge.nome}</div>
-        `;
 
-        const nomeEl = content.querySelector('.story-anime-nome');
-        if (nomeEl) {
-          content.insertBefore(wrap, nomeEl);
-        } else {
-          content.prepend(wrap);
-        }
+        badges.forEach((badge, index) => {
+          const fmtClass = badge.formato === 'redondo' ? ' badge--redondo' : ' badge--livre';
+          const item = document.createElement('div');
+          item.className = 'story-badge-item';
+          item.style.animationDelay = (index * 0.12) + 's';
+          item.innerHTML = `
+            <img
+              class="story-badge-img${fmtClass}"
+              src="${resolverUrlImg(badge.img)}"
+              alt="${badge.nome}"
+            >
+            <div class="story-badge-tag">${badge.nome}</div>
+          `;
+          wrap.appendChild(item);
+        });
+
+        capaWrap.appendChild(wrap);
       };
     }
   }, 50);
