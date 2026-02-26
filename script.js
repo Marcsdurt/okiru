@@ -499,19 +499,85 @@ document.getElementById("shareBtnTexto").addEventListener("click", async () => {
   fecharShareMenu();
 });
 
-// ── Compartilhar como IMAGEM para Stories ──
+// ── Compartilhar como IMAGEM — step 2 (seleção de badges) ──
+let _shareTipo = null; // "story" | "xpost"
+
+function irParaStep2(tipo) {
+  if (!animeParaCompartilhar) return;
+  _shareTipo = tipo;
+
+  const badges = window.Badges ? window.Badges.getBadgesDoAnime(animeParaCompartilhar) : [];
+  const lista  = document.getElementById("shareBadgeList");
+  lista.innerHTML = "";
+
+  if (badges.length === 0) {
+    lista.innerHTML = '<p class="share-badge-empty">Esse anime não tem badges ainda 😢</p>';
+  } else {
+    badges.forEach(badge => {
+      const imgSrc = window.Badges._resolverUrl ? window.Badges._resolverUrl(badge.img) : badge.img;
+      const item = document.createElement("label");
+      item.className = "share-badge-item";
+      item.innerHTML = `
+        <input type="checkbox" class="share-badge-check" value="${badge.id}" checked>
+        <div class="share-badge-item-inner">
+          <img class="share-badge-item-img" src="${imgSrc}" alt="${badge.nome}" onerror="this.style.display='none'">
+          <div class="share-badge-item-info">
+            <strong>${badge.nome}</strong>
+            <span>${badge.desc || ""}</span>
+          </div>
+          <div class="share-badge-item-toggle"></div>
+        </div>
+      `;
+      lista.appendChild(item);
+    });
+  }
+
+  document.getElementById("shareStep1").style.display = "none";
+  document.getElementById("shareStep2").style.display = "block";
+}
+
+function voltarStep1() {
+  document.getElementById("shareStep1").style.display = "block";
+  document.getElementById("shareStep2").style.display = "none";
+  _shareTipo = null;
+}
+
+document.getElementById("shareStep2Back").addEventListener("click", voltarStep1);
+
+document.getElementById("shareGerarBtn").addEventListener("click", () => {
+  if (!animeParaCompartilhar) return;
+  const anime = animeParaCompartilhar;
+
+  // Coleta IDs das badges marcadas
+  const selecionadas = [...document.querySelectorAll(".share-badge-check:checked")].map(el => el.value);
+  anime._badgesSelecionadas = selecionadas.length > 0 ? selecionadas : null;
+
+  const tipo = _shareTipo;
+  fecharShareMenu(); // fecha e limpa animeParaCompartilhar
+  voltarStep1();     // reseta step para próxima vez
+
+  if (tipo === "story") {
+    abrirStoryPreview(anime);
+  } else {
+    abrirXPostPreview(anime);
+  }
+});
+
+// Também resetar o step ao fechar manualmente
+const _origFecharShare = fecharShareMenu;
+fecharShareMenu = function() {
+  _origFecharShare();
+  voltarStep1();
+};
+
 document.getElementById("shareBtnStory").addEventListener("click", () => {
   if (!animeParaCompartilhar) return;
-  const anime = animeParaCompartilhar; // salva antes de fechar
-  fecharShareMenu();
-  abrirStoryPreview(anime);
+  irParaStep2("story");
 });
 
 document.getElementById("shareBtnXPost").addEventListener("click", () => {
   if (!animeParaCompartilhar) return;
-  const anime = animeParaCompartilhar;
-  fecharShareMenu();
-  abrirXPostPreview(anime);
+  irParaStep2("xpost");
 });
 
 document.getElementById("xPostPreviewOverlay").addEventListener("click", e => {

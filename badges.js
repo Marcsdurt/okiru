@@ -29,12 +29,25 @@
       nome:  'Clássico',
       img:   'badges/badge-classico.png',
       emoji: '🏛️',
+      formato: 'livre',
       desc:  'Esse anime está na sua lista há 1 ano ou mais. Um verdadeiro clássico do seu histórico!',
       check(anime) {
         const criacao = anime.dataCriacao || anime.id;
         if (!criacao) return false;
         const umAnoMs = 365 * 24 * 60 * 60 * 1000;
         return (Date.now() - criacao) >= umAnoMs;
+      },
+    },
+    {
+      id:    'decepcao',
+      nome:  'Decepção',
+      img:   'badges/badge-decepcao.png',
+      emoji: '😞',
+      formato: 'livre',
+      desc:  'Esse anime ficou abaixo das expectativas. Nota menor que 5.',
+      check(anime) {
+        const nota = parseFloat(anime.nota);
+        return !isNaN(nota) && nota > 0 && nota < 5;
       },
     },
     // { id: 'maratonista', nome: 'Maratonista', img: 'badges/badge-maratonista.png', emoji: '🏃',
@@ -65,17 +78,19 @@
     overlay.id = 'badgePopupOverlay';
     overlay.className = 'badge-popup-overlay';
 
+    const fmtClass = badge.formato === 'redondo' ? ' badge--redondo' : ' badge--livre';
+
     overlay.innerHTML = `
       <div class="badge-popup">
         <button class="badge-popup-close" id="badgePopupClose">✕</button>
         <div class="badge-popup-glow"></div>
         <img
-          class="badge-popup-img"
+          class="badge-popup-img${fmtClass}"
           src="${resolverUrlImg(badge.img)}"
           alt="${badge.nome}"
           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
         >
-        <span class="badge-popup-emoji" style="display:none">${badge.emoji}</span>
+        <span class="badge-popup-emoji${fmtClass}" style="display:none">${badge.emoji}</span>
         <div class="badge-popup-label">BADGE</div>
         <div class="badge-popup-nome">${badge.nome}</div>
         <div class="badge-popup-desc">${badge.desc || 'Anime na sua lista há 1 ano ou mais.'}</div>
@@ -97,28 +112,19 @@
     overlay.addEventListener('click', e => { if (e.target === overlay) fecharPopup(); });
   }
 
-  function renderBadgeNoModal(anime) {
-    if (badgeLateralEl) { badgeLateralEl.remove(); badgeLateralEl = null; }
+  function criarBadgeItem(badge, index) {
+    const fmtClass = badge.formato === 'redondo' ? ' badge--redondo' : ' badge--livre';
 
-    const badges = getBadgesDoAnime(anime);
-    if (badges.length === 0) return;
-
-    const badge     = badges[0];
-    const modalCard = document.querySelector('.modal-detalhe');
-    if (!modalCard) return;
-
-    const isMobile = window.innerWidth <= 768;
-
-    badgeLateralEl = document.createElement('div');
-    badgeLateralEl.className = 'badge-lateral-wrap' + (isMobile ? ' badge-lateral-mobile' : '');
-    badgeLateralEl.title = badge.nome;
+    const item = document.createElement('div');
+    item.className = 'badge-lateral-item';
+    item.style.setProperty('--badge-delay', (index * 0.15) + 's');
 
     const imgEl = document.createElement('img');
-    imgEl.className = 'badge-lateral-img';
+    imgEl.className = 'badge-lateral-img' + fmtClass;
     imgEl.alt = badge.nome;
 
     const emojiEl = document.createElement('span');
-    emojiEl.className = 'badge-lateral-emoji';
+    emojiEl.className = 'badge-lateral-emoji' + fmtClass;
     emojiEl.textContent = badge.emoji;
     emojiEl.style.display = 'none';
 
@@ -134,22 +140,46 @@
       <span class="badge-tooltip-name">${badge.nome}</span>
     `;
 
-    badgeLateralEl.appendChild(imgEl);
-    badgeLateralEl.appendChild(emojiEl);
-    badgeLateralEl.appendChild(tooltipEl);
+    item.appendChild(imgEl);
+    item.appendChild(emojiEl);
+    item.appendChild(tooltipEl);
 
-    // Clique abre o popup
-    badgeLateralEl.addEventListener('click', () => abrirBadgePopup(badge));
+    item.addEventListener('click', () => abrirBadgePopup(badge));
 
     imgEl.src = resolverUrlImg(badge.img);
+    return item;
+  }
+
+  function renderBadgeNoModal(anime) {
+    if (badgeLateralEl) { badgeLateralEl.remove(); badgeLateralEl = null; }
+
+    const badges = getBadgesDoAnime(anime);
+    if (badges.length === 0) return;
+
+    const modalCard = document.querySelector('.modal-detalhe');
+    if (!modalCard) return;
+
+    const isMobile = window.innerWidth <= 768;
+
+    badgeLateralEl = document.createElement('div');
+    badgeLateralEl.className = 'badge-lateral-wrap' + (isMobile ? ' badge-lateral-mobile' : '');
+
+    // Renderiza cada badge como um item empilhado com animação escalonada
+    badges.forEach((badge, index) => {
+      badgeLateralEl.appendChild(criarBadgeItem(badge, index));
+    });
+
     modalCard.appendChild(badgeLateralEl);
 
-    // No mobile a animação termina em translateY(-50%) — garante via animationend
+    // No mobile garante posição final via animationend do último item
     if (isMobile) {
-      badgeLateralEl.addEventListener('animationend', () => {
-        badgeLateralEl.style.opacity = '1';
-        badgeLateralEl.style.transform = 'translateY(-50%)';
-      }, { once: true });
+      const lastItem = badgeLateralEl.lastElementChild;
+      if (lastItem) {
+        lastItem.addEventListener('animationend', () => {
+          badgeLateralEl.style.opacity = '1';
+          badgeLateralEl.style.transform = 'translateY(-50%)';
+        }, { once: true });
+      }
     }
   }
 
@@ -212,15 +242,16 @@
         if (existing) existing.remove();
 
         // Cria o elemento da badge — imagem normal no DOM da página
+        const fmtClass = badge.formato === 'redondo' ? ' badge--redondo' : ' badge--livre';
         const wrap = document.createElement('div');
         wrap.className = 'story-badge-wrap';
         wrap.innerHTML = `
           <img
-            class="story-badge-img"
+            class="story-badge-img${fmtClass}"
             src="${resolverUrlImg(badge.img)}"
             alt="${badge.nome}"
           >
-          <div class="story-badge-tag">Clássico do meu histórico</div>
+          <div class="story-badge-tag">${badge.nome}</div>
         `;
 
         // Insere ANTES do nome do anime
@@ -256,15 +287,16 @@
         const existing = content.querySelector('.story-badge-wrap');
         if (existing) existing.remove();
 
+        const fmtClass = badge.formato === 'redondo' ? ' badge--redondo' : ' badge--livre';
         const wrap = document.createElement('div');
         wrap.className = 'story-badge-wrap';
         wrap.innerHTML = `
           <img
-            class="story-badge-img"
+            class="story-badge-img${fmtClass}"
             src="${resolverUrlImg(badge.img)}"
             alt="${badge.nome}"
           >
-          <div class="story-badge-tag">Clássico do meu histórico</div>
+          <div class="story-badge-tag">${badge.nome}</div>
         `;
 
         const nomeEl = content.querySelector('.story-anime-nome');

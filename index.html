@@ -505,34 +505,48 @@
     <div class="share-panel">
       <button class="share-close" id="shareClose">✖</button>
       <div class="share-anime-preview" id="shareAnimePreview"></div>
-      <h3 class="share-title">Compartilhar</h3>
-      <p class="share-sub">Como você quer compartilhar?</p>
-      <div class="share-options">
-        <button class="share-opt-btn" id="shareBtnTexto">
-          <span class="share-opt-icon">💬</span>
-          <div class="share-opt-text">
-            <strong>Mensagem de texto</strong>
-            <span>WhatsApp, Instagram DM...</span>
-          </div>
-          <span class="share-opt-arrow">›</span>
-        </button>
-        <button class="share-opt-btn share-opt-story" id="shareBtnStory">
-          <span class="share-opt-icon">🎌</span>
-          <div class="share-opt-text">
-            <strong>Imagem para Stories</strong>
-            <span>Gera card visual para Instagram</span>
-          </div>
-          <span class="share-opt-arrow">›</span>
-        </button>
-        <button class="share-opt-btn share-opt-xpost" id="shareBtnXPost">
-          <span class="share-opt-icon">𝕏</span>
-          <div class="share-opt-text">
-            <strong>Imagem para Post no X</strong>
-            <span>Gera card otimizado para o X</span>
-          </div>
-          <span class="share-opt-arrow">›</span>
-        </button>
+
+      <!-- STEP 1: tipo de compartilhamento -->
+      <div id="shareStep1">
+        <h3 class="share-title">Compartilhar</h3>
+        <p class="share-sub">Como você quer compartilhar?</p>
+        <div class="share-options">
+          <button class="share-opt-btn" id="shareBtnTexto">
+            <span class="share-opt-icon">💬</span>
+            <div class="share-opt-text">
+              <strong>Mensagem de texto</strong>
+              <span>WhatsApp, Instagram DM...</span>
+            </div>
+            <span class="share-opt-arrow">›</span>
+          </button>
+          <button class="share-opt-btn share-opt-story" id="shareBtnStory">
+            <span class="share-opt-icon">🎌</span>
+            <div class="share-opt-text">
+              <strong>Imagem para Stories</strong>
+              <span>Gera card visual para Instagram</span>
+            </div>
+            <span class="share-opt-arrow">›</span>
+          </button>
+          <button class="share-opt-btn share-opt-xpost" id="shareBtnXPost">
+            <span class="share-opt-icon">𝕏</span>
+            <div class="share-opt-text">
+              <strong>Imagem para Post no X</strong>
+              <span>Gera card otimizado para o X</span>
+            </div>
+            <span class="share-opt-arrow">›</span>
+          </button>
+        </div>
       </div>
+
+      <!-- STEP 2: seleção de badges -->
+      <div id="shareStep2" style="display:none">
+        <button class="share-step2-back" id="shareStep2Back">← Voltar</button>
+        <h3 class="share-title">Badges na imagem</h3>
+        <p class="share-sub">Escolha quais badges mostrar</p>
+        <div id="shareBadgeList" class="share-badge-list"></div>
+        <button class="share-gerar-btn" id="shareGerarBtn">Gerar imagem →</button>
+      </div>
+
     </div>
   </div>
 
