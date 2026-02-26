@@ -329,6 +329,12 @@ body.dark .badge-tooltip-name  { color: #e0e0f0; }
   gap: 7px;
 }
 
+@media (max-width: 768px) {
+  .story-badge-wrap {
+    bottom: 64px;
+  }
+}
+
 /* Item individual: badge + tag lado a lado */
 .story-badge-item {
   display: flex;
