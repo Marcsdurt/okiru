@@ -506,7 +506,7 @@ function irParaStep2(tipo) {
   if (!animeParaCompartilhar) return;
   _shareTipo = tipo;
 
-  const badges = window.Badges ? window.Badges.getBadgesDoAnime(animeParaCompartilhar) : [];
+  const badges = window.Badges ? window.Badges.getBadgesDisponiveisParaCompartilhar(animeParaCompartilhar) : [];
   const lista  = document.getElementById("shareBadgeList");
   lista.innerHTML = "";
 
@@ -517,10 +517,12 @@ function irParaStep2(tipo) {
       const imgSrc = window.Badges._resolverUrl ? window.Badges._resolverUrl(badge.img) : badge.img;
       const item = document.createElement("label");
       item.className = "share-badge-item";
+      const isManual = !badge.check; // badges manuais não têm função check
+      const fmtClass = badge.formato === 'redondo' ? ' badge--redondo' : ' badge--livre';
       item.innerHTML = `
-        <input type="checkbox" class="share-badge-check" value="${badge.id}" checked>
+        <input type="checkbox" class="share-badge-check" value="${badge.id}" ${isManual ? '' : 'checked'}>
         <div class="share-badge-item-inner">
-          <img class="share-badge-item-img" src="${imgSrc}" alt="${badge.nome}" onerror="this.style.display='none'">
+          <img class="share-badge-item-img${fmtClass}" src="${imgSrc}" alt="${badge.nome}" onerror="this.style.display='none'">
           <div class="share-badge-item-info">
             <strong>${badge.nome}</strong>
             <span>${badge.desc || ""}</span>

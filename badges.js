@@ -54,16 +54,50 @@
     //   check: (a) => parseInt(a.assistidosEps) >= 100 },
   ];
 
+  /* ─────────────────────────────────
+     BADGES MANUAIS
+     Sempre disponíveis para o usuário
+     escolher ao compartilhar como imagem.
+     Não aparecem automaticamente no modal
+     de detalhe — são opcionais e manuais.
+  ───────────────────────────────── */
+  const BADGES_MANUAIS = [
+    {
+      id:    'reassistindo',
+      nome:  'Reassistindo',
+      img:   'badges/badge-reassistindo.png',
+      emoji: '🔁',
+      formato: 'livre',
+      desc:  'Você está assistindo esse anime mais de uma vez. Só os bons merecem!',
+    },
+  ];
+
   function getBadgesDoAnime(anime) {
     return BADGES.filter(b => b.check(anime));
   }
 
-  // Retorna só as badges que o usuário marcou para compartilhar (ou todas se não houver seleção)
+  // Retorna só as badges que o usuário marcou para compartilhar (ou todas automáticas + manuais selecionadas)
   function getBadgesSelecionadas(anime) {
-    const todas = getBadgesDoAnime(anime);
+    const automaticas = getBadgesDoAnime(anime);
     const ids = anime._badgesSelecionadas;
-    if (!ids || ids.length === 0) return todas;
-    return todas.filter(b => ids.includes(b.id));
+
+    // Badges manuais selecionadas pelo usuário
+    const manuaisSelecionadas = BADGES_MANUAIS.filter(b => ids && ids.includes(b.id));
+
+    if (!ids || ids.length === 0) {
+      // Sem seleção explícita: retorna só as automáticas (manuais não entram por padrão)
+      return automaticas;
+    }
+
+    // Com seleção: filtra automáticas pelo id + adiciona manuais selecionadas
+    const automaticasSelecionadas = automaticas.filter(b => ids.includes(b.id));
+    return [...automaticasSelecionadas, ...manuaisSelecionadas];
+  }
+
+  // Retorna todas as badges disponíveis para um anime (automáticas elegíveis + todas manuais)
+  // Útil para montar a UI de seleção de badges no compartilhamento
+  function getBadgesDisponiveisParaCompartilhar(anime) {
+    return [...getBadgesDoAnime(anime), ...BADGES_MANUAIS];
   }
 
   /* ─────────────────────────────────
@@ -345,6 +379,6 @@
   }, 50);
 
   // API pública
-  window.Badges = { getBadgesDoAnime };
+  window.Badges = { getBadgesDoAnime, getBadgesDisponiveisParaCompartilhar, BADGES_MANUAIS, _resolverUrl: resolverUrlImg };
 
 })();

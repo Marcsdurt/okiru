@@ -1717,11 +1717,20 @@ body.dark .share-badge-item input:checked ~ .share-badge-item-inner {
 .share-badge-item-img {
   width: 44px;
   height: 44px;
+  border-radius: 0;
+  object-fit: contain;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  flex-shrink: 0;
+}
+
+/* Formato redondo */
+.share-badge-item-img.badge--redondo {
   border-radius: 50%;
-  object-fit: cover;
   border: 2.5px solid rgba(167, 139, 250, 0.6);
   box-shadow: 0 4px 12px rgba(108, 122, 224, 0.3);
-  flex-shrink: 0;
+  object-fit: cover;
 }
 
 /* Texto */
