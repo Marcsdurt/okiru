@@ -133,7 +133,11 @@ function renderizarAnimes() {
   });
 
   Object.keys(grupos).forEach(key => {
-    grupos[key].sort((a, b) => ordenacao[key] === "recentes" ? b.id - a.id : a.id - b.id);
+    grupos[key].sort((a, b) => {
+      const dataA = a.dataCriacao || a.id;
+      const dataB = b.dataCriacao || b.id;
+      return ordenacao[key] === "recentes" ? dataB - dataA : dataA - dataB;
+    });
   });
 
   Object.entries(grupos).forEach(([key, lista]) => {
@@ -306,6 +310,8 @@ const modalDetalhe = document.getElementById("modalDetalhe");
 
 function abrirDetalhe(anime) {
   animeAtual = anime;
+  // Limpar qualquer resquício de edição anterior
+  document.querySelector(".edit-fields-group")?.remove();
   editMode = false;
   const eb = document.getElementById("editBtn");
   eb.classList.remove("saving");
@@ -387,7 +393,23 @@ document.getElementById("moverParaLista").addEventListener("change", e => {
   setTimeout(() => sel.style.borderColor = "", 900);
 });
 
-document.getElementById("fecharDetalhe").addEventListener("click", () => modalDetalhe.style.display = "none");
+document.getElementById("fecharDetalhe").addEventListener("click", () => {
+  // Limpar modo edição se estiver ativo
+  if (editMode) {
+    document.querySelector(".edit-fields-group")?.remove();
+    const nome = document.getElementById("detalheNome");
+    const nota = document.getElementById("detalheNota");
+    if (animeAtual) {
+      nome.textContent = animeAtual.nome;
+      nota.textContent = "⭐ " + animeAtual.nota + " / 10";
+    }
+    const eb = document.getElementById("editBtn");
+    eb.classList.remove("saving");
+    eb.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M416.9 85.2L372 130.1L509.9 268L554.8 223.1C568.4 209.6 576 191.2 576 172C576 152.8 568.4 134.4 554.8 120.9L519.1 85.2C505.6 71.6 487.2 64 468 64C448.8 64 430.4 71.6 416.9 85.2zM338.1 164L122.9 379.1C112.2 389.8 104.4 403.2 100.3 417.8L64.9 545.6C62.6 553.9 64.9 562.9 71.1 569C77.3 575.1 86.2 577.5 94.5 575.2L222.3 539.7C236.9 535.6 250.2 527.9 261 517.1L476 301.9L338.1 164z"/></svg>`;
+    editMode = false;
+  }
+  modalDetalhe.style.display = "none";
+});
 
 document.getElementById("detalheShareBtn").addEventListener("click", () => {
   if (!animeAtual) return;
@@ -406,13 +428,18 @@ document.getElementById("editBtn").addEventListener("click", () => {
     // Nome e nota editáveis sobre o hero (fundo escuro, texto branco)
     nome.innerHTML = `<input type="text" id="editNome" class="detalhe-edit-input detalhe-edit-nome" value="${animeAtual.nome}">`;
     nota.innerHTML = `<input type="number" id="editNota" class="detalhe-edit-input detalhe-edit-nota" value="${animeAtual.nota}" min="0" max="10" step="0.1">`;
+    // Prevenir duplicatas (segurança extra)
+    document.querySelector(".edit-fields-group")?.remove();
     // Capa e data no corpo do modal
     const dataAtual = animeAtual.dataCriacao
       ? new Date(animeAtual.dataCriacao).toISOString().slice(0, 10)
       : new Date(animeAtual.id).toISOString().slice(0, 10);
     detalheBody.insertAdjacentHTML("afterbegin", `
       <div class="edit-fields-group">
-        <input type="text" id="editCapa" class="edit-capa-input" value="${animeAtual.capa}" placeholder="URL da capa">
+        <div class="edit-data-wrap">
+          <label class="edit-data-label">🖼️ URL da capa</label>
+          <input type="text" id="editCapa" class="edit-capa-input" value="${animeAtual.capa}" placeholder="URL da capa">
+        </div>
         <div class="edit-data-wrap">
           <label class="edit-data-label">📅 Data de adição</label>
           <input type="date" id="editData" class="edit-capa-input" value="${dataAtual}">

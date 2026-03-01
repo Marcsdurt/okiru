@@ -1687,7 +1687,7 @@ body.dark .proximas-sub { color: #6b6f9a; }
 }
 .proximas-corpo {
   overflow: hidden;
-  max-height: 1000px;
+  max-height: 9999px;
   transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.25s ease;
   opacity: 1;
 }
