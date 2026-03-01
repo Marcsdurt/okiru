@@ -72,6 +72,46 @@
       </div>
     </div>
 
+    <!-- BLOCO: Próximas temporadas -->
+    <div class="proximas-wrap" id="proximasWrap">
+      <div class="proximas-header" id="proximasHeader">
+        <div class="proximas-header-left">
+          <span class="proximas-icon">📡</span>
+          <div>
+            <div class="proximas-titulo">Próximas temporadas</div>
+            <div class="proximas-sub">Verifique se algum anime da sua lista tem novidades</div>
+          </div>
+        </div>
+        <div class="proximas-header-right">
+          <button class="proximas-btn" id="proximasVerificarBtn">Verificar</button>
+          <button class="proximas-fechar" id="proximasFecharBtn" title="Fechar">✕</button>
+        </div>
+      </div>
+
+      <!-- Estado: carregando -->
+      <div id="proximasCorpo" class="proximas-corpo">
+      <div class="proximas-loading" id="proximasLoading" style="display:none">
+        <div class="proximas-loading-bar"><div class="proximas-loading-fill" id="proximasLoadingFill"></div></div>
+        <div class="proximas-loading-texto" id="proximasLoadingTexto">Analisando sua lista…</div>
+      </div>
+
+      <!-- Estado: resultados -->
+      <div class="proximas-resultados" id="proximasResultados" style="display:none"></div>
+
+      <!-- Estado: vazio -->
+      <div class="proximas-vazio" id="proximasVazio" style="display:none">
+        <span class="proximas-vazio-icon">✨</span>
+        <span>Nenhuma novidade encontrada para os animes da sua lista.</span>
+      </div>
+
+      <!-- Rodapé com cache info -->
+      <div class="proximas-footer" id="proximasFooter" style="display:none">
+        <span id="proximasCacheInfo"></span>
+        <button class="proximas-atualizar" id="proximasAtualizarBtn">↺ Atualizar</button>
+      </div>
+      </div>
+    </div>
+
     <!-- Categorias -->
     <section class="categoria">
       <div class="categoria-header">
@@ -484,7 +524,7 @@
         <div id="storyCard" class="story-card"></div>
       </div>
       <button class="story-download-btn" id="storyDownloadBtn">⬇ Baixar imagem</button>
-      <p class="story-hint">Ou tire um screenshot da tela 📸</p>
+      <p class="story-hint">O arquivo PNG será salvo direto no seu dispositivo 📲</p>
     </div>
   </div>
 
@@ -496,7 +536,7 @@
         <div id="xPostCard" class="xpost-card"></div>
       </div>
       <button class="story-download-btn" id="xPostDownloadBtn">⬇ Baixar imagem para X</button>
-      <p class="story-hint">Ou tire um screenshot da tela 📸</p>
+      <p class="story-hint">O arquivo PNG será salvo direto no seu dispositivo 📲</p>
     </div>
   </div>
 
@@ -550,6 +590,7 @@
     </div>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="script.js"></script>
   <script src="tutorial.js"></script>
   <script src="badges.js"></script>
