@@ -2989,3 +2989,501 @@ body.dark .share-badge-item-toggle { border-color: rgba(167,139,250,0.25); }
     bottom: calc(60px + env(safe-area-inset-bottom, 0px) + 14px) !important;
   }
 }
+
+/* ══════════════════════════════════════
+   MODAL EDITAR DETALHES — redesign
+══════════════════════════════════════ */
+
+/* Overlay */
+.edit-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.edit-modal-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Card */
+.edit-modal {
+  width: min(440px, 100%);
+  max-height: 88dvh;
+  background: #fff;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.28), 0 0 0 1px rgba(108,122,224,0.08);
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.edit-modal-overlay.open .edit-modal {
+  transform: translateY(0) scale(1);
+}
+body.dark .edit-modal {
+  background: #16182a;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(108,122,224,0.15);
+}
+
+/* ── Bloco 1: Hero ── */
+.edit-hero {
+  position: relative;
+  height: 180px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 24px 24px 0 0;
+}
+.edit-hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+.edit-hero-fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.72) 100%);
+}
+.edit-close-btn {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(8px);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: background 0.2s, transform 0.15s;
+}
+.edit-close-btn svg { width: 16px; height: 16px; }
+.edit-close-btn:hover  { background: rgba(255,255,255,0.3); }
+.edit-close-btn:active { transform: scale(0.92); }
+
+.edit-hero-info {
+  position: absolute;
+  bottom: 0;
+  left: 0; right: 0;
+  padding: 0 16px 14px;
+  z-index: 2;
+}
+.edit-field-inline { margin-bottom: 8px; }
+.edit-title-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid rgba(255,255,255,0.4);
+  color: #fff;
+  font-family: 'Nunito', sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+  padding: 4px 0;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.edit-title-input::placeholder { color: rgba(255,255,255,0.5); }
+.edit-title-input:focus { border-bottom-color: rgba(255,255,255,0.85); }
+
+.edit-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.edit-nota-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.edit-star {
+  font-size: 16px;
+  color: #fbbf24;
+  line-height: 1;
+  margin-top: -1px;
+}
+.edit-nota-input {
+  width: 48px;
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid rgba(255,255,255,0.45);
+  color: #fff;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  text-align: center;
+  padding: 2px 0;
+  outline: none;
+  transition: border-color 0.2s;
+  -moz-appearance: textfield;
+}
+.edit-nota-input::-webkit-inner-spin-button,
+.edit-nota-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+.edit-nota-input:focus { border-bottom-color: rgba(255,255,255,0.85); }
+.edit-nota-suffix {
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+  font-weight: 700;
+}
+
+/* Tags no hero — cinza claro, não roxo */
+.edit-tags-preview {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.edit-tag {
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(4px);
+  font-family: 'Nunito', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: rgba(255,255,255,0.85);
+  text-transform: uppercase;
+}
+
+/* ── Corpo scrollável ── */
+.edit-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ── Seções ── */
+.edit-section-label {
+  font-family: 'Nunito', sans-serif;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #9095b8;
+  margin-bottom: 12px;
+}
+body.dark .edit-section-label { color: #4a4e72; }
+
+/* ── Bloco 2: Progresso ── */
+.edit-progress-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.edit-progress-bar-track {
+  width: 100%;
+  height: 6px;
+  background: #e9ebf5;
+  border-radius: 99px;
+  overflow: hidden;
+}
+body.dark .edit-progress-bar-track { background: #1e2035; }
+.edit-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4ade80, #22c55e);
+  border-radius: 99px;
+  transition: width 0.3s ease;
+  min-width: 4px;
+}
+.edit-progress-nums {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.edit-eps-input {
+  width: 60px;
+  padding: 6px 10px;
+  border: 1.5px solid #e2e4f0;
+  border-radius: 10px;
+  background: #f8f9fd;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: #2d2f4a;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s;
+  -moz-appearance: textfield;
+}
+.edit-eps-input::-webkit-inner-spin-button,
+.edit-eps-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+.edit-eps-input:focus { border-color: #6c7ae0; }
+body.dark .edit-eps-input {
+  background: #1e2035;
+  border-color: #2a2d48;
+  color: #e0e0f0;
+}
+.edit-eps-sep {
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  color: #9095b8;
+  font-weight: 700;
+}
+.edit-eps-label {
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  color: #9095b8;
+  font-weight: 700;
+}
+
+/* ── Bloco 3: Detalhes ── */
+.edit-detail-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f1f8;
+}
+body.dark .edit-detail-row { border-bottom-color: #1e2035; }
+.edit-detail-row:last-of-type { border-bottom: none; }
+.edit-detail-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: #b0b5d8;
+  display: flex;
+  align-items: center;
+}
+.edit-detail-icon svg { width: 16px; height: 16px; }
+.edit-detail-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.edit-detail-fieldlabel {
+  font-family: 'Nunito', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #b0b5d8;
+}
+.edit-detail-input {
+  background: transparent;
+  border: none;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #4a4f6a;
+  outline: none;
+  width: 100%;
+  padding: 0;
+  transition: color 0.2s;
+}
+.edit-detail-input:focus { color: #2d2f4a; }
+body.dark .edit-detail-input { color: #8088b0; }
+body.dark .edit-detail-input:focus { color: #c0c5e0; }
+
+/* Date input cosmetics */
+.edit-detail-input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0.3;
+  cursor: pointer;
+}
+
+/* ── Anotações ── */
+.edit-obs-textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 12px 14px;
+  border: 1.5px solid #e2e4f0;
+  border-radius: 14px;
+  background: #f8f9fd;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4a4f6a;
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+  line-height: 1.6;
+}
+.edit-obs-textarea::placeholder { color: #c0c5da; }
+.edit-obs-textarea:focus { border-color: #6c7ae0; }
+body.dark .edit-obs-textarea {
+  background: #1e2035;
+  border-color: #2a2d48;
+  color: #9095b8;
+}
+
+/* ── Rodapé fixo ── */
+.edit-footer {
+  flex-shrink: 0;
+  padding: 14px 20px calc(14px + env(safe-area-inset-bottom, 0px));
+  background: #fff;
+  border-top: 1px solid #f0f1f8;
+}
+body.dark .edit-footer {
+  background: #16182a;
+  border-top-color: #1e2035;
+}
+.edit-save-btn {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 14px;
+  cursor: pointer;
+  background: #e2e4f0;
+  color: #9095b8;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+.edit-save-btn.changed {
+  background: linear-gradient(135deg, #6c7ae0, #a78bfa);
+  color: #fff;
+  box-shadow: 0 4px 18px rgba(108,122,224,0.4);
+}
+.edit-save-btn:active { transform: scale(0.98); }
+
+/* Mobile */
+@media (max-width: 500px) {
+  .edit-modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .edit-modal {
+    width: 100%;
+    max-height: 93dvh;
+    border-radius: 24px 24px 0 0;
+  }
+}
+
+/* ── Upload de capa ── */
+.edit-capa-btn-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.edit-capa-thumb-wrap {
+  position: relative;
+  width: 56px;
+  height: 72px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  cursor: pointer;
+  background: #f0f1f8;
+  border: 2px dashed #d0d3ea;
+  transition: border-color 0.2s;
+}
+body.dark .edit-capa-thumb-wrap {
+  background: #1e2035;
+  border-color: #2a2d48;
+}
+.edit-capa-thumb-wrap:hover { border-color: #6c7ae0; }
+
+.edit-capa-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.edit-capa-thumb-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(108, 122, 224, 0.0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.edit-capa-thumb-overlay svg {
+  width: 20px;
+  height: 20px;
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.2s;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6));
+}
+.edit-capa-thumb-wrap:hover .edit-capa-thumb-overlay {
+  background: rgba(0, 0, 0, 0.38);
+}
+.edit-capa-thumb-wrap:hover .edit-capa-thumb-overlay svg {
+  opacity: 1;
+}
+
+.edit-capa-btn-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.edit-capa-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #d0d3ea;
+  background: #f8f9fd;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: #4a4f6a;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+.edit-capa-upload-btn svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: #6c7ae0;
+}
+.edit-capa-upload-btn:hover {
+  border-color: #6c7ae0;
+  background: #eef0fb;
+  color: #2d2f4a;
+}
+.edit-capa-upload-btn:active {
+  transform: scale(0.97);
+}
+body.dark .edit-capa-upload-btn {
+  background: #1e2035;
+  border-color: #2a2d48;
+  color: #8088b0;
+}
+body.dark .edit-capa-upload-btn:hover {
+  border-color: #6c7ae0;
+  background: #22254a;
+  color: #c0c5e0;
+}
+
+.edit-capa-hint {
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #b0b5d8;
+  letter-spacing: 0.3px;
+}
+.edit-capa-hint.has-file {
+  color: #6c7ae0;
+}
+body.dark .edit-capa-hint { color: #4a4e72; }
+body.dark .edit-capa-hint.has-file { color: #a78bfa; }

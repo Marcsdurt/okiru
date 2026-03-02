@@ -478,74 +478,146 @@ document.getElementById("moverParaLista").addEventListener("change", (e) => {
   setTimeout(() => sel.style.color = "", 900);
 });
 
-// Editar — dentro do dropdown
-document.getElementById("editBtn").addEventListener("click", () => {
-  document.getElementById("dtMenuDropdown").classList.remove("open");
-  document.getElementById("dtMenuBtn").classList.remove("active");
+// ══ MODAL EDITAR DETALHES ══
+(function () {
+  const overlay   = document.getElementById("editModalOverlay");
+  const closeBtn  = document.getElementById("editCloseBtn");
+  const saveBtn   = document.getElementById("editSaveBtn");
 
-  const capa       = document.getElementById("detalheCapa");
-  const nome       = document.getElementById("detalheNome");
-  const nota       = document.getElementById("detalheNota");
-  const detalheBody = document.querySelector(".detalhe-body");
-  if (!animeAtual) return;
+  // Inputs
+  const nomeInput       = document.getElementById("editNomeInput");
+  const notaInput       = document.getElementById("editNotaInput");
+  const capaInput       = document.getElementById("editCapaInput"); // hidden
+  const capaFile        = document.getElementById("editCapaFile");
+  const capaUploadBtn   = document.getElementById("editCapaUploadBtn");
+  const capaThumb       = document.getElementById("editCapaThumb");
+  const capaHint        = document.getElementById("editCapaHint");
+  const dataInput       = document.getElementById("editDataInput");
+  const assistidosInput = document.getElementById("editAssistidosInput");
+  const totalInput      = document.getElementById("editTotalInput");
+  const obsInput        = document.getElementById("editObsInput");
+  const heroBg          = document.getElementById("editHeroBg");
+  const tagsPreview     = document.getElementById("editTagsPreview");
+  const progressFill    = document.getElementById("editProgressFill");
+  const progressoSection = document.getElementById("editProgressoSection");
 
-  const EDIT_ICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
+  function atualizarBarra() {
+    const assistidos = parseInt(assistidosInput.value) || 0;
+    const total      = parseInt(totalInput.value) || 0;
+    const pct = (total > 0) ? Math.min(100, Math.round(assistidos / total * 100)) : 0;
+    progressFill.style.width = pct + "%";
+  }
 
-  if (!editMode) {
-    nome.innerHTML = `<input type="text" id="editNome" class="detalhe-edit-input detalhe-edit-nome" value="${animeAtual.nome}">`;
-    nota.innerHTML = `<input type="number" id="editNota" class="detalhe-edit-input detalhe-edit-nota" value="${animeAtual.nota}" min="0" max="10" step="0.1">`;
-    document.querySelector(".edit-fields-group")?.remove();
+  assistidosInput.addEventListener("input", atualizarBarra);
+  totalInput.addEventListener("input", atualizarBarra);
+
+  // Upload de imagem
+  capaUploadBtn.addEventListener("click", () => capaFile.click());
+  document.getElementById("editCapaThumbWrap").addEventListener("click", () => capaFile.click());
+
+  capaFile.addEventListener("change", () => {
+    const file = capaFile.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      capaInput.value = dataUrl;
+      heroBg.src      = dataUrl;
+      capaThumb.src   = dataUrl;
+      capaHint.textContent = file.name.length > 22 ? file.name.slice(0, 20) + "\u2026" : file.name;
+      capaHint.classList.add("has-file");
+      saveBtn.classList.add("changed");
+    };
+    reader.readAsDataURL(file);
+  });
+
+  function abrirEditModal() {
+    if (!animeAtual) return;
+    document.getElementById("dtMenuDropdown").classList.remove("open");
+    document.getElementById("dtMenuBtn").classList.remove("active");
+
+    // Preencher campos
+    nomeInput.value  = animeAtual.nome || "";
+    notaInput.value  = animeAtual.nota || "";
+    capaInput.value  = animeAtual.capa || "";
+    heroBg.src       = animeAtual.capa || "";
+    capaThumb.src    = animeAtual.capa || "";
+    capaHint.textContent = "JPG, PNG, WEBP";
+    capaHint.classList.remove("has-file");
+    capaFile.value   = "";
+
     const dataAtual = animeAtual.dataCriacao
       ? new Date(animeAtual.dataCriacao).toISOString().slice(0, 10)
       : new Date(animeAtual.id).toISOString().slice(0, 10);
-    detalheBody.insertAdjacentHTML("afterbegin", `
-      <div class="edit-fields-group">
-        <div class="edit-data-wrap">
-          <label class="edit-data-label">URL da capa</label>
-          <input type="text" id="editCapa" class="edit-capa-input" value="${animeAtual.capa}" placeholder="URL da capa">
-        </div>
-        <div class="edit-data-wrap">
-          <label class="edit-data-label">Data de adição</label>
-          <input type="date" id="editData" class="edit-capa-input" value="${dataAtual}">
-        </div>
-        <button id="salvarEdicaoBtn" style="
-          padding:11px; border:none; border-radius:13px; cursor:pointer;
-          background:linear-gradient(135deg,#6c7ae0,#a78bfa); color:#fff;
-          font-weight:800; font-family:'Nunito',sans-serif; font-size:14px;
-          box-shadow:0 4px 14px rgba(108,122,224,0.35);
-          transition:opacity .18s, transform .15s;
-        ">✓ Salvar alterações</button>
-      </div>
-    `);
-    document.getElementById("salvarEdicaoBtn").addEventListener("click", salvarEdicao);
-    editMode = true;
-  } else {
-    salvarEdicao();
+    dataInput.value = dataAtual;
+
+    // Progresso
+    const isFilme = animeAtual.tipo === "filme";
+    progressoSection.style.display = isFilme ? "none" : "";
+    assistidosInput.value = animeAtual.assistidosEps || 0;
+    totalInput.value      = animeAtual.totalEps || "";
+    atualizarBarra();
+
+    // Anotação
+    obsInput.value = animeAtual.observacao || "";
+
+    // Tags de gêneros no hero
+    tagsPreview.innerHTML = "";
+    if (animeAtual.generos && animeAtual.generos.length) {
+      animeAtual.generos.slice(0, 3).forEach(g => {
+        const t = document.createElement("span");
+        t.className = "edit-tag";
+        t.textContent = g;
+        tagsPreview.appendChild(t);
+      });
+    }
+
+    // Marcar botão como pristine
+    saveBtn.classList.remove("changed");
+
+    // Ouvir mudanças para ativar botão
+    [nomeInput, notaInput, dataInput, assistidosInput, totalInput, obsInput].forEach(el => {
+      el.addEventListener("input", () => saveBtn.classList.add("changed"), { once: false });
+    });
+
+    overlay.classList.add("open");
+    requestAnimationFrame(() => nomeInput.focus());
   }
-});
 
-function salvarEdicao() {
-  if (!animeAtual) return;
-  const editNomeEl = document.getElementById("editNome");
-  const editNotaEl = document.getElementById("editNota");
-  const editCapaEl = document.getElementById("editCapa");
-  const editDataEl = document.getElementById("editData");
+  function fecharEditModal() {
+    overlay.classList.remove("open");
+  }
 
-  if (editNomeEl) animeAtual.nome = editNomeEl.value;
-  if (editNotaEl) animeAtual.nota = editNotaEl.value;
-  if (editCapaEl) animeAtual.capa = editCapaEl.value;
-  if (editDataEl && editDataEl.value)
-    animeAtual.dataCriacao = new Date(editDataEl.value + "T12:00:00").getTime();
+  function salvarEdicaoModal() {
+    if (!animeAtual) return;
 
-  animeAtual.observacao = document.getElementById("detalheObs").value;
-  localStorage.setItem("animes", JSON.stringify(animes));
-  document.querySelector(".edit-fields-group")?.remove();
-  document.getElementById("detalheNome").textContent = animeAtual.nome;
-  document.getElementById("detalheNota").textContent = animeAtual.nota ? "⭐ " + animeAtual.nota + " / 10" : "";
-  document.getElementById("detalheCapa").src = animeAtual.capa;
-  renderizarAnimes();
-  editMode = false;
-}
+    if (nomeInput.value.trim())       animeAtual.nome = nomeInput.value.trim();
+    if (notaInput.value !== "")       animeAtual.nota = notaInput.value;
+    if (capaInput.value.trim())       animeAtual.capa = capaInput.value.trim();
+    if (dataInput.value)              animeAtual.dataCriacao = new Date(dataInput.value + "T12:00:00").getTime();
+    if (assistidosInput.value !== "") animeAtual.assistidosEps = parseInt(assistidosInput.value) || 0;
+    if (totalInput.value !== "")      animeAtual.totalEps = parseInt(totalInput.value) || 0;
+    animeAtual.observacao = obsInput.value;
+
+    localStorage.setItem("animes", JSON.stringify(animes));
+
+    // Atualizar modal de detalhe sem fechar
+    document.getElementById("detalheNome").textContent = animeAtual.nome;
+    document.getElementById("detalheNota").textContent = animeAtual.nota ? "⭐ " + animeAtual.nota + " / 10" : "";
+    document.getElementById("detalheCapa").src = animeAtual.capa;
+    // Atualizar obs no detalhe tbm
+    document.getElementById("detalheObs").value = animeAtual.observacao;
+
+    renderizarAnimes();
+    fecharEditModal();
+    editMode = false;
+  }
+
+  document.getElementById("editBtn").addEventListener("click", abrirEditModal);
+  closeBtn.addEventListener("click", fecharEditModal);
+  overlay.addEventListener("click", e => { if (e.target === overlay) fecharEditModal(); });
+  saveBtn.addEventListener("click", salvarEdicaoModal);
+})();
 
 // Excluir — abre modal de confirmação
 document.getElementById("deleteBtn").addEventListener("click", () => {
