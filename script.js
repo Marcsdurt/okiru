@@ -310,21 +310,18 @@ const modalDetalhe = document.getElementById("modalDetalhe");
 
 function abrirDetalhe(anime) {
   animeAtual = anime;
-  // Limpar qualquer resquício de edição anterior
   document.querySelector(".edit-fields-group")?.remove();
   editMode = false;
-  const eb = document.getElementById("editBtn");
-  eb.classList.remove("saving");
-  eb.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M416.9 85.2L372 130.1L509.9 268L554.8 223.1C568.4 209.6 576 191.2 576 172C576 152.8 568.4 134.4 554.8 120.9L519.1 85.2C505.6 71.6 487.2 64 468 64C448.8 64 430.4 71.6 416.9 85.2zM338.1 164L122.9 379.1C112.2 389.8 104.4 403.2 100.3 417.8L64.9 545.6C62.6 553.9 64.9 562.9 71.1 569C77.3 575.1 86.2 577.5 94.5 575.2L222.3 539.7C236.9 535.6 250.2 527.9 261 517.1L476 301.9L338.1 164z"/></svg>`;
-  document.getElementById("detalheCapa").src = anime.capa;
+
+  document.getElementById("detalheCapa").src   = anime.capa;
   document.getElementById("detalheNome").textContent = anime.nome;
-  document.getElementById("detalheNota").textContent = "⭐ " + anime.nota + " / 10";
-  document.getElementById("detalheObs").value = anime.observacao || "";
+  document.getElementById("detalheNota").textContent = anime.nota ? "⭐ " + anime.nota + " / 10" : "";
+  document.getElementById("detalheObs").value  = anime.observacao || "";
   document.getElementById("moverParaLista").value = anime.status;
 
   // Badge filme
-  const filmeBadge = document.getElementById("detalheFilmeBadge");
-  filmeBadge.style.display = anime.tipo === "filme" ? "inline-flex" : "none";
+  document.getElementById("detalheFilmeBadge").style.display =
+    anime.tipo === "filme" ? "inline-flex" : "none";
 
   // Gêneros no hero
   const tagsEl = document.getElementById("detalheGenerosTags");
@@ -332,9 +329,16 @@ function abrirDetalhe(anime) {
     tagsEl.innerHTML = renderizarTagsGenero(anime.generos);
     tagsEl.style.display = "flex";
   } else {
-    tagsEl.innerHTML = "";
-    tagsEl.style.display = "none";
+    tagsEl.innerHTML = ""; tagsEl.style.display = "none";
   }
+
+  // Fechar o menu ⋯ se estava aberto
+  document.getElementById("dtMenuDropdown").classList.remove("open");
+  document.getElementById("dtMenuBtn").classList.remove("active");
+
+  // Resetar autosave badge
+  document.getElementById("obsAutosaveStatus").textContent = "";
+  document.getElementById("obsAutosaveStatus").classList.remove("visible");
 
   renderEpisodiosDetalhe(anime);
   modalDetalhe.style.display = "flex";
@@ -342,145 +346,241 @@ function abrirDetalhe(anime) {
 
 function renderEpisodiosDetalhe(anime) {
   const wrap = document.getElementById("detalheEpisodios");
-  if (anime.tipo === "filme") {
-    wrap.innerHTML = "";
-    return;
-  }
-  const totalEps = parseInt(anime.totalEps) || 0;
-  const assistidosEps = parseInt(anime.assistidosEps) || 0;
-  const pct = totalEps > 0 ? Math.min(100, Math.round((assistidosEps / totalEps) * 100)) : 0;
+  if (anime.tipo === "filme") { wrap.innerHTML = ""; return; }
+
+  const total      = parseInt(anime.totalEps)      || 0;
+  const assistidos = parseInt(anime.assistidosEps) || 0;
+  const pct        = total > 0 ? Math.min(100, Math.round((assistidos / total) * 100)) : 0;
+  const isDone     = total > 0 && assistidos >= total;
+
+  // Label: "11 / 11 eps" or "3 / ? eps" — single source of truth, no separate %
+  const countLabel = total > 0
+    ? `${assistidos} / ${total} ep.`
+    : assistidos > 0 ? `${assistidos} ep.` : "—";
+
   wrap.innerHTML = `
-    <div class="eps-detalhe-row">
-      <div class="eps-detalhe-field">
-        <label>Assistidos</label>
-        <input type="number" id="detalheAssistidosEps" value="${assistidosEps}" min="0" max="${totalEps || 99999}" placeholder="0">
+    <div class="eps-block">
+      <!-- Linha: label + contagem -->
+      <div class="eps-header">
+        <span class="eps-label">Progresso</span>
+        <span class="eps-count ${isDone ? "eps-count--done" : ""}">${countLabel}</span>
       </div>
-      <span class="eps-sep">/</span>
-      <div class="eps-detalhe-field">
-        <label>Total</label>
-        <input type="number" id="detalheTotalEps" value="${totalEps || ""}" min="0" placeholder="?">
+
+      <!-- Barra de progresso (só se tiver total) -->
+      ${total > 0 ? `
+      <div class="eps-bar-wrap">
+        <div class="eps-bar ${isDone ? "eps-bar--done" : ""}" style="width:${pct}%"></div>
+      </div>` : ""}
+
+      <!-- Stepper: − [N] + e campo de total -->
+      <div class="eps-stepper-row">
+        <button class="eps-step-btn" id="epsDecBtn" ${assistidos <= 0 ? "disabled" : ""}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <div class="eps-stepper-center">
+          <input type="number" id="detalheAssistidosEps" class="eps-num-input" value="${assistidos}" min="0" max="${total || 99999}" placeholder="0">
+          <span class="eps-stepper-sep">/ </span>
+          <input type="number" id="detalheTotalEps" class="eps-num-input eps-total-input" value="${total || ""}" min="0" placeholder="?">
+          <span class="eps-stepper-unit">ep.</span>
+        </div>
+        <button class="eps-step-btn" id="epsIncBtn" ${total > 0 && assistidos >= total ? "disabled" : ""}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
       </div>
     </div>
-    ${totalEps > 0 ? `
-    <div class="eps-detalhe-bar-wrap">
-      <div class="eps-detalhe-bar" style="width:${pct}%"></div>
-      <span class="eps-detalhe-pct">${pct}%</span>
-    </div>` : ""}
   `;
+
+  // Eventos: inputs diretos
   document.getElementById("detalheTotalEps").addEventListener("change", salvarEpisodios);
   document.getElementById("detalheAssistidosEps").addEventListener("change", salvarEpisodios);
-  document.getElementById("detalheAssistidosEps").addEventListener("input", salvarEpisodios);
+  document.getElementById("detalheAssistidosEps").addEventListener("input",  salvarEpisodios);
+
+  // Stepper buttons
+  document.getElementById("epsIncBtn").addEventListener("click", () => {
+    const el = document.getElementById("detalheAssistidosEps");
+    const max = parseInt(document.getElementById("detalheTotalEps").value) || 99999;
+    const cur = parseInt(el.value) || 0;
+    if (cur < max) { el.value = cur + 1; salvarEpisodios(); }
+  });
+  document.getElementById("epsDecBtn").addEventListener("click", () => {
+    const el = document.getElementById("detalheAssistidosEps");
+    const cur = parseInt(el.value) || 0;
+    if (cur > 0) { el.value = cur - 1; salvarEpisodios(); }
+  });
 }
 
 function salvarEpisodios() {
   if (!animeAtual) return;
-  const totalEps = parseInt(document.getElementById("detalheTotalEps").value) || 0;
-  const assistidosEps = Math.min(parseInt(document.getElementById("detalheAssistidosEps").value) || 0, totalEps || 99999);
-  animeAtual.totalEps = totalEps;
-  animeAtual.assistidosEps = assistidosEps;
+  const total      = parseInt(document.getElementById("detalheTotalEps").value) || 0;
+  const assistidos = Math.min(
+    parseInt(document.getElementById("detalheAssistidosEps").value) || 0,
+    total || 99999
+  );
+  animeAtual.totalEps     = total;
+  animeAtual.assistidosEps = assistidos;
   localStorage.setItem("animes", JSON.stringify(animes));
   renderEpisodiosDetalhe(animeAtual);
   renderizarAnimes();
 }
 
-document.getElementById("moverParaLista").addEventListener("change", e => {
-  if (!animeAtual) return;
-  animeAtual.status = e.target.value;
-  localStorage.setItem("animes", JSON.stringify(animes));
-  renderizarAnimes();
-  const sel = e.target;
-  sel.style.borderColor = "#34d399";
-  setTimeout(() => sel.style.borderColor = "", 900);
+// ── Menu ⋯ ──
+document.getElementById("dtMenuBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  const dd  = document.getElementById("dtMenuDropdown");
+  const btn = document.getElementById("dtMenuBtn");
+  const isOpen = dd.classList.toggle("open");
+  btn.classList.toggle("active", isOpen);
 });
 
+// Fechar dropdown ao clicar fora
+document.addEventListener("click", (e) => {
+  const dd  = document.getElementById("dtMenuDropdown");
+  const btn = document.getElementById("dtMenuBtn");
+  if (!dd.contains(e.target) && e.target !== btn) {
+    dd.classList.remove("open");
+    btn.classList.remove("active");
+  }
+});
+
+// Compartilhar — dentro do menu
+document.getElementById("dtShareBtn").addEventListener("click", () => {
+  document.getElementById("dtMenuDropdown").classList.remove("open");
+  document.getElementById("dtMenuBtn").classList.remove("active");
+  if (animeAtual) abrirMenuCompartilhar(animeAtual);
+});
+
+// Fechar modal
 document.getElementById("fecharDetalhe").addEventListener("click", () => {
-  // Limpar modo edição se estiver ativo
   if (editMode) {
     document.querySelector(".edit-fields-group")?.remove();
     const nome = document.getElementById("detalheNome");
     const nota = document.getElementById("detalheNota");
     if (animeAtual) {
       nome.textContent = animeAtual.nome;
-      nota.textContent = "⭐ " + animeAtual.nota + " / 10";
+      nota.textContent = animeAtual.nota ? "⭐ " + animeAtual.nota + " / 10" : "";
     }
-    const eb = document.getElementById("editBtn");
-    eb.classList.remove("saving");
-    eb.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M416.9 85.2L372 130.1L509.9 268L554.8 223.1C568.4 209.6 576 191.2 576 172C576 152.8 568.4 134.4 554.8 120.9L519.1 85.2C505.6 71.6 487.2 64 468 64C448.8 64 430.4 71.6 416.9 85.2zM338.1 164L122.9 379.1C112.2 389.8 104.4 403.2 100.3 417.8L64.9 545.6C62.6 553.9 64.9 562.9 71.1 569C77.3 575.1 86.2 577.5 94.5 575.2L222.3 539.7C236.9 535.6 250.2 527.9 261 517.1L476 301.9L338.1 164z"/></svg>`;
     editMode = false;
   }
+  document.getElementById("dtMenuDropdown").classList.remove("open");
+  document.getElementById("dtMenuBtn").classList.remove("active");
   modalDetalhe.style.display = "none";
 });
 
-document.getElementById("detalheShareBtn").addEventListener("click", () => {
+// Mover entre listas — dentro do dropdown
+document.getElementById("moverParaLista").addEventListener("change", (e) => {
   if (!animeAtual) return;
-  abrirMenuCompartilhar(animeAtual);
+  animeAtual.status = e.target.value;
+  localStorage.setItem("animes", JSON.stringify(animes));
+  renderizarAnimes();
+  // Feedback visual na select
+  const sel = e.target;
+  sel.style.color = "#34d399";
+  setTimeout(() => sel.style.color = "", 900);
 });
 
+// Editar — dentro do dropdown
 document.getElementById("editBtn").addEventListener("click", () => {
-  const capa = document.getElementById("detalheCapa");
-  const nome = document.getElementById("detalheNome");
-  const nota = document.getElementById("detalheNota");
+  document.getElementById("dtMenuDropdown").classList.remove("open");
+  document.getElementById("dtMenuBtn").classList.remove("active");
+
+  const capa       = document.getElementById("detalheCapa");
+  const nome       = document.getElementById("detalheNome");
+  const nota       = document.getElementById("detalheNota");
   const detalheBody = document.querySelector(".detalhe-body");
   if (!animeAtual) return;
-  const EDIT_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M416.9 85.2L372 130.1L509.9 268L554.8 223.1C568.4 209.6 576 191.2 576 172C576 152.8 568.4 134.4 554.8 120.9L519.1 85.2C505.6 71.6 487.2 64 468 64C448.8 64 430.4 71.6 416.9 85.2zM338.1 164L122.9 379.1C112.2 389.8 104.4 403.2 100.3 417.8L64.9 545.6C62.6 553.9 64.9 562.9 71.1 569C77.3 575.1 86.2 577.5 94.5 575.2L222.3 539.7C236.9 535.6 250.2 527.9 261 517.1L476 301.9L338.1 164z"/></svg>`;
-  const SAVE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M256 416.1L131.3 291.3L86.06 336.6L256 506.5L553.9 208.6L508.7 163.4L256 416.1z"/></svg>`;
+
+  const EDIT_ICON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
+
   if (!editMode) {
-    // Nome e nota editáveis sobre o hero (fundo escuro, texto branco)
     nome.innerHTML = `<input type="text" id="editNome" class="detalhe-edit-input detalhe-edit-nome" value="${animeAtual.nome}">`;
     nota.innerHTML = `<input type="number" id="editNota" class="detalhe-edit-input detalhe-edit-nota" value="${animeAtual.nota}" min="0" max="10" step="0.1">`;
-    // Prevenir duplicatas (segurança extra)
     document.querySelector(".edit-fields-group")?.remove();
-    // Capa e data no corpo do modal
     const dataAtual = animeAtual.dataCriacao
       ? new Date(animeAtual.dataCriacao).toISOString().slice(0, 10)
       : new Date(animeAtual.id).toISOString().slice(0, 10);
     detalheBody.insertAdjacentHTML("afterbegin", `
       <div class="edit-fields-group">
         <div class="edit-data-wrap">
-          <label class="edit-data-label">🖼️ URL da capa</label>
+          <label class="edit-data-label">URL da capa</label>
           <input type="text" id="editCapa" class="edit-capa-input" value="${animeAtual.capa}" placeholder="URL da capa">
         </div>
         <div class="edit-data-wrap">
-          <label class="edit-data-label">📅 Data de adição</label>
+          <label class="edit-data-label">Data de adição</label>
           <input type="date" id="editData" class="edit-capa-input" value="${dataAtual}">
         </div>
+        <button id="salvarEdicaoBtn" style="
+          padding:11px; border:none; border-radius:13px; cursor:pointer;
+          background:linear-gradient(135deg,#6c7ae0,#a78bfa); color:#fff;
+          font-weight:800; font-family:'Nunito',sans-serif; font-size:14px;
+          box-shadow:0 4px 14px rgba(108,122,224,0.35);
+          transition:opacity .18s, transform .15s;
+        ">✓ Salvar alterações</button>
       </div>
     `);
-    document.getElementById("editBtn").innerHTML = SAVE_SVG;
-    document.getElementById("editBtn").classList.add("saving");
+    document.getElementById("salvarEdicaoBtn").addEventListener("click", salvarEdicao);
     editMode = true;
   } else {
-    animeAtual.nome = document.getElementById("editNome").value;
-    animeAtual.nota = document.getElementById("editNota").value;
-    animeAtual.capa = document.getElementById("editCapa").value;
-    animeAtual.observacao = document.getElementById("detalheObs").value;
-    const editDataVal = document.getElementById("editData") ? document.getElementById("editData").value : null;
-    if (editDataVal) animeAtual.dataCriacao = new Date(editDataVal + "T12:00:00").getTime();
-    localStorage.setItem("animes", JSON.stringify(animes));
-    document.querySelector(".edit-fields-group")?.remove();
-    nome.textContent = animeAtual.nome;
-    nota.textContent = "⭐ " + animeAtual.nota + " / 10";
-    capa.src = animeAtual.capa;
-    renderizarAnimes();
-    document.getElementById("editBtn").innerHTML = EDIT_SVG;
-    document.getElementById("editBtn").classList.remove("saving");
-    editMode = false;
+    salvarEdicao();
   }
 });
 
+function salvarEdicao() {
+  if (!animeAtual) return;
+  const editNomeEl = document.getElementById("editNome");
+  const editNotaEl = document.getElementById("editNota");
+  const editCapaEl = document.getElementById("editCapa");
+  const editDataEl = document.getElementById("editData");
+
+  if (editNomeEl) animeAtual.nome = editNomeEl.value;
+  if (editNotaEl) animeAtual.nota = editNotaEl.value;
+  if (editCapaEl) animeAtual.capa = editCapaEl.value;
+  if (editDataEl && editDataEl.value)
+    animeAtual.dataCriacao = new Date(editDataEl.value + "T12:00:00").getTime();
+
+  animeAtual.observacao = document.getElementById("detalheObs").value;
+  localStorage.setItem("animes", JSON.stringify(animes));
+  document.querySelector(".edit-fields-group")?.remove();
+  document.getElementById("detalheNome").textContent = animeAtual.nome;
+  document.getElementById("detalheNota").textContent = animeAtual.nota ? "⭐ " + animeAtual.nota + " / 10" : "";
+  document.getElementById("detalheCapa").src = animeAtual.capa;
+  renderizarAnimes();
+  editMode = false;
+}
+
+// Excluir — abre modal de confirmação
 document.getElementById("deleteBtn").addEventListener("click", () => {
-  if (!animeAtual || !confirm("Tem certeza?")) return;
+  if (!animeAtual) return;
+  document.getElementById("dtMenuDropdown").classList.remove("open");
+  document.getElementById("dtMenuBtn").classList.remove("active");
+  document.getElementById("dtConfirmDesc").textContent =
+    `"${animeAtual.nome}" será removido permanentemente da sua lista.`;
+  document.getElementById("dtConfirmOverlay").classList.add("open");
+});
+document.getElementById("dtConfirmCancel").addEventListener("click", () => {
+  document.getElementById("dtConfirmOverlay").classList.remove("open");
+});
+document.getElementById("dtConfirmOk").addEventListener("click", () => {
+  if (!animeAtual) return;
   animes = animes.filter(a => a.id !== animeAtual.id);
   localStorage.setItem("animes", JSON.stringify(animes));
   renderizarAnimes();
+  document.getElementById("dtConfirmOverlay").classList.remove("open");
   modalDetalhe.style.display = "none";
   animeAtual = null;
 });
 
+// Anotação com autosave + feedback
+let obsAutosaveTimer = null;
 document.getElementById("detalheObs").addEventListener("input", () => {
   if (!animeAtual) return;
   animeAtual.observacao = document.getElementById("detalheObs").value;
   localStorage.setItem("animes", JSON.stringify(animes));
+
+  const badge = document.getElementById("obsAutosaveStatus");
+  badge.textContent = "✓ salvo";
+  badge.classList.add("visible");
+  clearTimeout(obsAutosaveTimer);
+  obsAutosaveTimer = setTimeout(() => badge.classList.remove("visible"), 2000);
 });
 
 // ======== COMPARTILHAR ========
@@ -1272,8 +1372,27 @@ function aplicarUsuario() {
   if (hImg)  hImg.src = usuario.foto;
   document.body.classList.toggle("dark", usuario.darkMode);
   document.getElementById("darkModeToggle").checked = usuario.darkMode;
+  // Update sidebar user block
+  const sbAvatar = document.getElementById("sidebarAvatar");
+  const sbName   = document.getElementById("sidebarUserName");
+  if (sbAvatar) sbAvatar.src   = usuario.foto;
+  if (sbName)   sbName.textContent = usuario.nome;
+  // Update settings header
+  const nameInput = document.getElementById("novoNome");
+  const avatarPrev = document.getElementById("settingsAvatarPreview");
+  const urlInput  = document.getElementById("novaFoto");
+  if (nameInput)  nameInput.value  = usuario.nome;
+  if (avatarPrev) avatarPrev.src   = usuario.foto;
+  if (urlInput)   urlInput.value   = usuario.foto;
 }
 aplicarUsuario();
+
+// Instant dark mode toggle
+document.getElementById("darkModeToggle").addEventListener("change", function() {
+  usuario.darkMode = this.checked;
+  document.body.classList.toggle("dark", usuario.darkMode);
+  localStorage.setItem("usuario", JSON.stringify(usuario));
+});
 
 const paginaPrincipal = document.getElementById("paginaPrincipal");
 const paginaSettings  = document.getElementById("paginaSettings");
@@ -1281,51 +1400,74 @@ const btnAddFloat     = document.querySelector(".btn-add");
 
 function setSidebarActive(id) {
   document.querySelectorAll(".sidebar .icon").forEach(i => i.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
+  const el = document.getElementById(id);
+  if (el) el.classList.add("active");
+}
+
+function esconderTodasPaginas() {
+  paginaPrincipal.classList.add("esconder");
+  paginaSettings.style.display = "none";
+  const ps = document.getElementById("paginaStats");
+  if (ps) ps.style.display = "none";
+  btnAddFloat.classList.add("esconder");
 }
 
 document.getElementById("btnSettings").addEventListener("click", () => {
+  esconderTodasPaginas();
   setSidebarActive("btnSettings");
-  paginaPrincipal.classList.add("esconder");
   paginaSettings.style.display = "flex";
-  btnAddFloat.classList.add("esconder");
-  document.getElementById("novoNome").value = usuario.nome;
-  document.getElementById("novaFoto").value = usuario.foto;
-  const prev = document.getElementById("settingsAvatarPreview");
-  if (prev) prev.src = usuario.foto;
+  aplicarUsuario(); // sincroniza todos os campos do settings
 });
 
-document.getElementById("novaFoto").addEventListener("input", e => {
-  const val = e.target.value.trim();
-  if (val) document.getElementById("settingsAvatarPreview").src = val;
-});
-
-// Botão Galeria — abre seletor de arquivo
-document.getElementById("btnGaleria").addEventListener("click", () => {
+// Avatar clicável abre file picker
+document.getElementById("cfgAvatarWrap").addEventListener("click", () => {
   document.getElementById("fotoFileInput").click();
 });
 
+// File picker → preview imediato (base64)
 document.getElementById("fotoFileInput").addEventListener("change", e => {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = ev => {
     const dataUrl = ev.target.result;
-    document.getElementById("novaFoto").value = dataUrl;
+    document.getElementById("novaFoto").value   = dataUrl;
     document.getElementById("settingsAvatarPreview").src = dataUrl;
   };
   reader.readAsDataURL(file);
+});
+
+// URL input → preview em tempo real
+document.getElementById("novaFoto").addEventListener("input", e => {
+  const val = e.target.value.trim();
+  if (val) document.getElementById("settingsAvatarPreview").src = val;
+});
+
+// Botão "Editar URL" abre modal de URL
+document.getElementById("btnAbrirUrlFoto").addEventListener("click", () => {
+  document.getElementById("cfgPhotoModal").classList.add("visible");
+  document.getElementById("novaFoto").focus();
+});
+
+// Fechar modal URL
+document.getElementById("cfgPhotoModalClose").addEventListener("click", () => {
+  document.getElementById("cfgPhotoModal").classList.remove("visible");
+});
+
+// Aplicar URL
+document.getElementById("cfgApplyUrl").addEventListener("click", () => {
+  const val = document.getElementById("novaFoto").value.trim();
+  if (val) document.getElementById("settingsAvatarPreview").src = val;
+  document.getElementById("cfgPhotoModal").classList.remove("visible");
 });
 
 // ======== ESTATÍSTICAS ========
 const paginaStats = document.getElementById("paginaStats");
 
 document.getElementById("btnStats").addEventListener("click", () => {
+  esconderTodasPaginas();
   setSidebarActive("btnStats");
-  paginaPrincipal.classList.add("esconder");
-  paginaSettings.style.display = "none";
   paginaStats.style.display = "flex";
-  btnAddFloat.classList.add("esconder");
   renderizarStats();
 });
 
@@ -1494,25 +1636,27 @@ function renderizarStats() {
 }
 
 function voltarHome() {
+  esconderTodasPaginas();
   setSidebarActive("btnHome");
-  paginaSettings.style.display = "none";
-  paginaStats.style.display = "none";
   paginaPrincipal.classList.remove("esconder");
   btnAddFloat.classList.remove("esconder");
 }
 document.getElementById("btnHome").addEventListener("click", voltarHome);
 document.getElementById("btnVoltarSettings").addEventListener("click", voltarHome);
 document.getElementById("salvarSettings").addEventListener("click", () => {
-  usuario.nome = document.getElementById("novoNome").value;
-  usuario.foto = document.getElementById("novaFoto").value;
+  usuario.nome     = (document.getElementById("novoNome").value || "").trim() || usuario.nome;
+  usuario.foto     = document.getElementById("novaFoto").value || usuario.foto;
   usuario.darkMode = document.getElementById("darkModeToggle").checked;
   localStorage.setItem("usuario", JSON.stringify(usuario));
   aplicarUsuario();
+
   const btn = document.getElementById("salvarSettings");
-  const orig = btn.textContent;
-  btn.textContent = "✓ Salvo!";
-  btn.style.background = "linear-gradient(135deg,#34d399,#059669)";
-  setTimeout(() => { btn.textContent = orig; btn.style.background = ""; }, 1800);
+  btn.textContent = "✓ Salvo";
+  btn.classList.add("cfg-btn--saved");
+  setTimeout(() => {
+    btn.textContent = "Salvar";
+    btn.classList.remove("cfg-btn--saved");
+  }, 2000);
 });
 
 // ======== BUSCA (Jikan) ========
@@ -1812,3 +1956,68 @@ document.getElementById("importFileInput").addEventListener("change", (e) => {
   };
   reader.readAsText(file);
 });
+
+// ======== SIDEBAR COLLAPSE ========
+(function () {
+  const STORAGE_KEY = "okiru_sidebar_collapsed";
+  const btn = document.getElementById("sidebarToggleBtn");
+  if (!btn) return;
+
+  // Restore saved state
+  if (localStorage.getItem(STORAGE_KEY) === "1") {
+    document.body.classList.add("sidebar-collapsed");
+  }
+
+  btn.addEventListener("click", () => {
+    const isCollapsed = document.body.classList.toggle("sidebar-collapsed");
+    localStorage.setItem(STORAGE_KEY, isCollapsed ? "1" : "0");
+  });
+})();
+
+/* ══════════════════════════════════════
+   BOTTOM NAV — mobile
+   Espelha os botões da sidebar
+══════════════════════════════════════ */
+(function () {
+  function setBottomNavActive(id) {
+    document.querySelectorAll('#bottomNav .bn-item').forEach(i => i.classList.remove('active'));
+    const el = document.getElementById(id);
+    if (el) el.classList.add('active');
+  }
+
+  // Conecta cada botão do bottom nav ao clique do equivalente na sidebar
+  const map = {
+    bnHome:     'btnHome',
+    bnSearch:   'btnSearch',
+    bnStats:    'btnStats',
+    bnSettings: 'btnSettings',
+  };
+
+  Object.entries(map).forEach(([bnId, sidebarId]) => {
+    const bnEl = document.getElementById(bnId);
+    const sidebarEl = document.getElementById(sidebarId);
+    if (!bnEl || !sidebarEl) return;
+
+    bnEl.addEventListener('click', () => {
+      sidebarEl.click();
+      setBottomNavActive(bnId);
+    });
+  });
+
+  // Sincroniza o active do bottom nav quando a sidebar muda
+  // (ex: voltarHome() chama setSidebarActive)
+  const origSetSidebarActive = window.setSidebarActive;
+  if (typeof origSetSidebarActive === 'function') {
+    window.setSidebarActive = function (id) {
+      origSetSidebarActive(id);
+      const reverseMap = {
+        btnHome:     'bnHome',
+        btnSearch:   'bnSearch',
+        btnStats:    'bnStats',
+        btnSettings: 'bnSettings',
+      };
+      const bnId = reverseMap[id];
+      if (bnId) setBottomNavActive(bnId);
+    };
+  }
+})();
