@@ -2342,8 +2342,8 @@ a.icon {
   text-decoration: none;
   color: inherit;
 }
-a.icon svg { fill: #6c7ae0; }
-a.icon:hover svg { fill: #6c7ae0; }
+a.icon svg,
+a.icon svg * { fill: none; }
 
 /* ── Galeria no modal de adicionar ── */
 .modal-field-header {
