@@ -62,6 +62,7 @@ function renderizarTagsGenero(generos) {
 
 // ======== DADOS ========
 let animes = JSON.parse(localStorage.getItem("animes")) || [];
+window.animes = animes; // exposto para módulos externos (ex: temporadas.js)
 let animeAtual = null;
 let editMode = false;
 let searchTimeout = null;
@@ -1996,6 +1997,7 @@ document.getElementById("importFileInput").addEventListener("change", (e) => {
 
       // Aplicar na interface sem recarregar
       animes = dados.animes;
+      window.animes = animes; // mantém referência sincronizada
       if (dados.usuario) {
         usuario = dados.usuario;
         aplicarUsuario();
