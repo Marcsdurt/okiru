@@ -1,0 +1,243 @@
+/* ══════════════════════════════════════
+   EXPANDIR LISTAS — OKIRU
+   Adicione ao index.html:
+     <link rel="stylesheet" href="expandir.css">  → no <head>
+     <script src="expandir.js"></script>           → antes de </body>
+══════════════════════════════════════ */
+
+/* ─────────────────────────────────
+   BOTÃO DE EXPANDIR
+   Mesmo estilo visual do .filter-btn
+───────────────────────────────── */
+.expandir-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: rgba(108, 122, 224, 0.08);
+  border: 1.5px solid rgba(108, 122, 224, 0.18);
+  border-radius: 50%;
+  cursor: pointer;
+  color: #6c7ae0;
+  flex-shrink: 0;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s, color 0.2s;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.expandir-btn svg {
+  width: 12px;
+  height: 12px;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.expandir-btn:hover {
+  background: rgba(108, 122, 224, 0.16);
+  border-color: rgba(108, 122, 224, 0.35);
+  transform: scale(1.1);
+}
+.expandir-btn:active {
+  transform: scale(0.9);
+}
+/* Estado expandido: ícone troca para "recolher" */
+.expandir-btn.ativo {
+  background: rgba(108, 122, 224, 0.18);
+  border-color: rgba(108, 122, 224, 0.45);
+  color: #5a6ad0;
+}
+.expandir-btn.ativo svg {
+  transform: rotate(180deg);
+}
+
+body.dark .expandir-btn {
+  background: rgba(108, 122, 224, 0.2);
+  border-color: rgba(108, 122, 224, 0.3);
+  color: #a78bfa;
+}
+body.dark .expandir-btn:hover {
+  background: rgba(108, 122, 224, 0.35);
+  border-color: rgba(108, 122, 224, 0.5);
+}
+body.dark .expandir-btn.ativo {
+  background: rgba(108, 122, 224, 0.35);
+  border-color: rgba(167, 139, 250, 0.55);
+  color: #c4b5fd;
+}
+
+/* ─────────────────────────────────
+   OVERLAY DE FUNDO (quando expandido)
+───────────────────────────────── */
+#expandirOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 400;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+#expandirOverlay.visivel {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ─────────────────────────────────
+   CATEGORIA EXPANDIDA
+   Flutua sobre o layout, quase full-screen
+───────────────────────────────── */
+.categoria.expandida {
+  position: fixed !important;
+  z-index: 500;
+  /* Posição e tamanho — desktop */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  width: min(860px, 92vw);
+  max-height: 88vh;
+  overflow-y: auto;
+  /* Mantém visual do card */
+  background: rgba(255, 255, 255, 0.97) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 28px !important;
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(108, 122, 224, 0.12);
+  padding: 28px 28px 24px !important;
+  margin: 0 !important;
+  animation: expandirEntrada 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(108, 122, 224, 0.3) transparent;
+}
+.categoria.expandida::-webkit-scrollbar { width: 5px; }
+.categoria.expandida::-webkit-scrollbar-thumb {
+  background: rgba(108, 122, 224, 0.25);
+  border-radius: 10px;
+}
+
+body.dark .categoria.expandida {
+  background: rgba(18, 20, 36, 0.98) !important;
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(108, 122, 224, 0.2);
+}
+
+@keyframes expandirEntrada {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes recolherSaida {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.94);
+  }
+}
+
+/* ─────────────────────────────────
+   LISTA NO MODO EXPANDIDO
+   Muda de scroll horizontal para
+   grid de múltiplas linhas
+───────────────────────────────── */
+.categoria.expandida .lista {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  overflow-x: visible !important;
+  overflow-y: visible !important;
+  gap: 14px !important;
+  cursor: default !important;
+  padding-bottom: 4px !important;
+}
+
+/* Cards um pouco maiores no modo expandido */
+.categoria.expandida .lista .card {
+  width: 120px;
+  flex-shrink: 0;
+}
+
+/* Lista vazia: não muda */
+.categoria.expandida .lista .lista-empty {
+  flex: 1;
+  min-width: 180px;
+}
+
+/* ─────────────────────────────────
+   BOTÃO RECOLHER
+   Aparece dentro do modal expandido,
+   no header da categoria
+───────────────────────────────── */
+.categoria.expandida .expandir-btn {
+  /* Já está no header — só fica ativo */
+}
+
+/* ─────────────────────────────────
+   SCROLL — mobile: o card expandido
+   vira bottom-sheet, igual aos modais
+───────────────────────────────── */
+@media (max-width: 768px) {
+  .categoria.expandida {
+    top: auto !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    transform: none !important;
+    width: 100% !important;
+    max-height: 88dvh;
+    border-radius: 28px 28px 0 0 !important;
+    animation: expandirSheetUp 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    padding: 20px 16px 32px !important;
+  }
+
+  @keyframes expandirSheetUp {
+    from { opacity: 0; transform: translateY(100%); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Alça visual (igual outros sheets) */
+  .categoria.expandida::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: rgba(0, 0, 0, 0.12);
+    border-radius: 2px;
+    margin: 0 auto 18px;
+  }
+
+  body.dark .categoria.expandida::before {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .categoria.expandida .lista .card {
+    width: 104px;
+  }
+}
+
+@media (max-width: 420px) {
+  .categoria.expandida .lista .card {
+    width: 96px;
+  }
+}
+
+/* ─────────────────────────────────
+   MODAL DE DETALHE ACIMA DA LISTA EXPANDIDA
+   Garante que o modal fique sempre no topo
+   quando uma lista estiver expandida
+───────────────────────────────── */
+body.lista-expandida-ativa .modal-detalhe-overlay {
+  z-index: 600;
+}
+body.lista-expandida-ativa #expandirOverlay {
+  z-index: 400;
+}
