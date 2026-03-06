@@ -207,6 +207,7 @@
 
   /* ─── BUSCA ─── */
   function _hookBusca(animeRef) {
+    // Sempre busca os elementos frescos do DOM (podem ter sido recriados)
     const toggle    = document.getElementById('tempSearchToggle');
     const inputWrap = document.getElementById('tempSearchInputWrap');
     const input     = document.getElementById('tempSearchInput');
@@ -214,24 +215,46 @@
     const results   = document.getElementById('tempSearchResults');
     if (!toggle) return;
 
-    let expandido = false;
+    // Guarda o id — nunca o objeto inteiro (evita stale reference)
+    const animeId = animeRef.id;
+
+    // Usa AbortController para remover listeners antigos ao recriar
+    // (evita acúmulo de listeners se _hookBusca for chamado mais de uma vez)
+    const ac = new AbortController();
+    const sig = { signal: ac.signal };
+
+    // Armazena o controller no elemento para cancelar na próxima chamada
+    if (toggle._buscaAbort) toggle._buscaAbort.abort();
+    toggle._buscaAbort = ac;
+
+    let expandido = inputWrap.classList.contains('expanded');
 
     toggle.addEventListener('click', () => {
       expandido = !expandido;
       inputWrap.classList.toggle('expanded', expandido);
-      if (expandido) setTimeout(() => input.focus(), 160);
-      else { input.value = ''; clear.classList.remove('visible'); results.innerHTML = ''; }
-    });
+      if (expandido) {
+        setTimeout(() => input.focus(), 160);
+      } else {
+        input.value = '';
+        clear.classList.remove('visible');
+        results.innerHTML = '';
+      }
+    }, sig);
 
     clear.addEventListener('click', () => {
-      input.value = ''; clear.classList.remove('visible'); results.innerHTML = ''; input.focus();
-    });
+      input.value = '';
+      clear.classList.remove('visible');
+      results.innerHTML = '';
+      input.focus();
+    }, sig);
 
     input.addEventListener('input', () => {
       const t = input.value.trim().toLowerCase();
       clear.classList.toggle('visible', t.length > 0);
-      mostrarResultados(t, animeRef, results);
-    });
+      // Lê o anime fresco do localStorage a cada busca
+      const animeAtualizado = lerAnimes().find(a => a.id === animeId) || animeRef;
+      mostrarResultados(t, animeAtualizado, results);
+    }, sig);
   }
 
   function mostrarResultados(termo, animeRef, resultsEl) {
@@ -288,6 +311,8 @@
           if (sub) sub.textContent = tot > 0 ? `${tot} temporada(s) associada(s)` : 'Associar outras temporadas';
 
           renderLista(novoAtual);
+          // Re-ativa o hook de busca com o anime atualizado (DOM pode ter mudado)
+          _hookBusca(novoAtual);
           if (typeof window.renderizarAnimes === 'function') window.renderizarAnimes();
         } else {
           toast('⚠️ Não foi possível associar este anime');
