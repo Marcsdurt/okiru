@@ -62,46 +62,79 @@
     _tt = setTimeout(() => t.classList.remove('visible'), 2600);
   }
 
-  /* ─── PATCH: abrirDetalhe ─── */
-  // script.js carrega antes deste arquivo, então window.abrirDetalhe já existe aqui
-  const _origAbrir = window.abrirDetalhe;
-  if (typeof _origAbrir === 'function') {
-    window.abrirDetalhe = function (anime) {
-      _origAbrir.call(this, anime);
-      requestAnimationFrame(() => renderSecao(anime));
-    };
+  /* ─── DETECTAR ABERTURA DO MODAL via MutationObserver ───
+     script.js chama abrirDetalhe() direto (não via window),
+     então substituir window.abrirDetalhe não funciona.
+     Em vez disso, observamos quando #modalDetalhe fica visível
+     e lemos o anime atual pelo nome exibido no modal.
+  ─── */
+  (function() {
+    const modalEl = document.getElementById('modalDetalhe');
+    if (!modalEl) return;
+
+    let _estaAberto = false;
+
+    const obs = new MutationObserver(() => {
+      const aberto = modalEl.style.display === 'flex';
+      if (aberto && !_estaAberto) {
+        _estaAberto = true;
+        // Modal acabou de abrir — lê anime atual pelo nome no header
+        requestAnimationFrame(() => _aoAbrirModal());
+      } else if (!aberto && _estaAberto) {
+        _estaAberto = false;
+        removerSecao();
+      }
+    });
+    obs.observe(modalEl, { attributes: true, attributeFilter: ['style'] });
+  })();
+
+  function _aoAbrirModal() {
+    const nomeEl = document.getElementById('detalheNome');
+    if (!nomeEl) return;
+    const nome = nomeEl.textContent.trim().toLowerCase();
+    const arr = lerAnimes();
+    const anime = arr.find(a => a.nome.trim().toLowerCase() === nome);
+    if (anime) renderSecao(anime);
   }
 
-  /* ─── PATCH: renderizarAnimes ─── */
-  // Remove cards de filhos do DOM e corrige contadores
-  const _origRender = window.renderizarAnimes;
-  if (typeof _origRender === 'function') {
-    window.renderizarAnimes = function () {
-      _origRender.call(this);
-      requestAnimationFrame(patchDOM);
-    };
-  }
+  /* ─── DETECTAR RERENDERIZAÇÃO DAS LISTAS via MutationObserver ───
+     script.js chama renderizarAnimes() direto (não via window),
+     então observamos quando #listaAssistindo é limpa/repopulada.
+  ─── */
+  (function() {
+    const listaEl = document.getElementById('listaAssistindo');
+    if (!listaEl) return;
+
+    let _patchPendente = false;
+
+    const obs = new MutationObserver(() => {
+      if (_patchPendente) return;
+      _patchPendente = true;
+      // Debounce: aguarda a render terminar antes de patchear
+      // Dois rAF para garantir que o script.js terminou de popular todos os containers
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          obs.disconnect(); // pausa observer para evitar loop ao remover cards
+          patchDOM();
+          obs.observe(listaEl, { childList: true }); // retoma
+          _patchPendente = false;
+        });
+      });
+    });
+    obs.observe(listaEl, { childList: true });
+  })();
 
   function patchDOM() {
     const arr = lerAnimes();
-    const filhosIds = new Set(arr.filter(a => a.temporadaDe).map(a => a.id));
-    if (filhosIds.size === 0) return;
-
-    // Remove cards dos filhos — compara por data-id que o card carrega (ver nota abaixo)
-    // Como script.js não coloca data-id nos cards, usamos nome como fallback
-    // MAS sincronizamos o array animes em memória primeiro para que a próxima
-    // renderização já não inclua os filhos
-    _sincronizarAnimesMemoria(arr);
+    const filhosNomes = new Set(arr.filter(a => a.temporadaDe).map(a => a.nome.trim().toLowerCase()));
+    if (filhosNomes.size === 0) return;
 
     ['listaAssistindo','listaAssistidos','listaPara'].forEach(cid => {
       const el = document.getElementById(cid);
       if (!el) return;
       el.querySelectorAll('.card').forEach(card => {
         const t = card.querySelector('.card-title');
-        if (!t) return;
-        const nome = t.textContent.trim().toLowerCase();
-        const match = arr.find(a => filhosIds.has(a.id) && a.nome.trim().toLowerCase() === nome);
-        if (match) card.remove();
+        if (t && filhosNomes.has(t.textContent.trim().toLowerCase())) card.remove();
       });
     });
 
@@ -118,40 +151,15 @@
     });
   }
 
-  // Sincroniza o array `animes` em memória do script.js com o localStorage
-  // para que renderizarAnimes() não re-exiba filhos que acabaram de ser associados
-  function _sincronizarAnimesMemoria(arr) {
-    try {
-      // script.js expõe `animes` como closure — não está em window
-      // Mas podemos forçar uma releitura através do próprio renderizarAnimes
-      // O truque real é: após associar, chamamos renderizarAnimes que vai recriar
-      // os cards. O patchDOM vai rodar logo depois e remover os filhos novamente.
-      // Para evitar o flash, sobrescrevemos o array via referência se possível.
-      // Se script.js declarar window.animes, usamos. Senão, confiamos no patchDOM.
-      if (Array.isArray(window.animes)) {
-        arr.forEach(novoItem => {
-          const idx = window.animes.findIndex(a => a.id === novoItem.id);
-          if (idx !== -1) window.animes[idx] = novoItem;
-        });
-      }
-    } catch(e) {}
-  }
-
   /* ─── RENDER DA SEÇÃO ─── */
   let _sec = null;
 
   function removerSecao() { if (_sec) { _sec.remove(); _sec = null; } }
 
-  function renderSecao(anime, _tentativa) {
+  function renderSecao(anime) {
     removerSecao();
     const body = document.querySelector('.detalhe-body');
-    if (!body) {
-      // Modal pode ainda não estar no DOM — tenta mais 3x com pequeno delay
-      if ((_tentativa || 0) < 3) {
-        setTimeout(() => renderSecao(anime, (_tentativa || 0) + 1), 60);
-      }
-      return;
-    }
+    if (!body) return;
 
     const obs = body.querySelector('.detalhe-obs-wrap');
     _sec = document.createElement('div');
@@ -195,7 +203,7 @@
     const subTxt = ids.length > 0 ? `${ids.length} temporada(s) associada(s)` : 'Associar outras temporadas';
 
     _sec.innerHTML = `
-      <div class="temp-header open" id="tempHeader">
+      <div class="temp-header" id="tempHeader">
         <div class="temp-header-left">
           <div class="temp-header-icon">${_svgFilme()}</div>
           <div class="temp-header-text">
@@ -205,7 +213,7 @@
         </div>
         ${_svgChevron()}
       </div>
-      <div class="temp-body open" id="tempBody">
+      <div class="temp-body" id="tempBody">
         <div class="temp-body-inner">
           <div class="temp-search-wrap">
             <button class="temp-search-toggle" id="tempSearchToggle" title="Buscar anime">
@@ -347,7 +355,6 @@
           renderLista(novoAtual);
           // Re-ativa o hook de busca com o anime atualizado (DOM pode ter mudado)
           _hookBusca(novoAtual);
-          _sincronizarAnimesMemoria(lerAnimes());
           if (typeof window.renderizarAnimes === 'function') window.renderizarAnimes();
         } else {
           toast('⚠️ Não foi possível associar este anime');
@@ -409,7 +416,6 @@
           const tot = (pai.temporadas || []).length;
           if (sub) sub.textContent = tot > 0 ? `${tot} temporada(s) associada(s)` : 'Associar outras temporadas';
         }
-        _sincronizarAnimesMemoria(lerAnimes());
         if (typeof window.renderizarAnimes === 'function') window.renderizarAnimes();
       });
     }
@@ -417,11 +423,7 @@
   }
 
   /* ─── FECHAR MODAL ─── */
-  document.addEventListener('click', e => {
-    const f = document.getElementById('fecharDetalhe');
-    const o = document.getElementById('modalDetalhe');
-    if (f && (f.contains(e.target) || e.target === f || e.target === o)) removerSecao();
-  });
+  // Gerenciado pelo MutationObserver do #modalDetalhe acima
 
   /* ─── SVG helpers ─── */
   function _svgFilme() {
