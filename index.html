@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Okiru</title>
+  <meta name="application-name" content="Okiru">
+  <meta name="theme-color" content="#6c7ae0">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Okiru">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/x-icon" href="icons/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/android-chrome-192x192.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/tutorial.css">
+  <link rel="stylesheet" href="css/badges.css">
+  <link rel="stylesheet" href="css/temporadas.css">
+  <link rel="stylesheet" href="css/expandir.css">
+</head>
+<body>
+
+  <aside class="sidebar">
+    <!-- Logo + Nome -->
+    <div class="sidebar-brand">
+      <img src="icons/okiru-logo.png" alt="Okiru" class="sidebar-logo-img" onerror="this.style.display='none'">
+      <span class="sidebar-brand-name">Okiru</span>
+    </div>
+    <div class="sidebar-divider"></div>
+
+    <!-- Navegação principal -->
+    <nav class="sidebar-nav">
+      <div class="icon active" id="btnHome" title="Início">
+        <span class="icon-svg">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></svg>
+        </span>
+        <span class="icon-label">Início</span>
+      </div>
+      <div class="icon" id="btnSearch" title="Buscar">
+        <span class="icon-svg">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </span>
+        <span class="icon-label">Buscar</span>
+      </div>
+      <div class="icon" id="btnStats" title="Estatísticas">
+        <span class="icon-svg">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </span>
+        <span class="icon-label">Estatísticas</span>
+      </div>
+      <a href="mangas.html" class="icon" id="btnMangas" title="Mangás">
+        <span class="icon-svg">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        </span>
+        <span class="icon-label">Mangás</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-spacer"></div>
+
+    <!-- Configurações -->
+    <div class="icon" id="btnSettings" title="Configurações">
+      <span class="icon-svg">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </span>
+      <span class="icon-label">Configurações</span>
+    </div>
+    <div class="sidebar-divider"></div>
+
+    <!-- Bloco do usuário -->
+    <div class="sidebar-user-block">
+      <div class="sidebar-user-avatar-wrap">
+        <img id="sidebarAvatar" src="https://i.imgur.com/6VBx3io.png" alt="perfil" class="sidebar-user-avatar">
+      </div>
+      <span class="sidebar-user-name" id="sidebarUserName">Usuário</span>
+    </div>
+  </aside>
+
+  <!-- ── Bottom Nav (mobile only) ── -->
+  <nav id="bottomNav">
+    <div class="bn-item active" id="bnHome">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/></svg>
+      <span>Início</span>
+    </div>
+    <div class="bn-item" id="bnSearch">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span>Buscar</span>
+    </div>
+    <div class="bn-item" id="bnStats">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <span>Stats</span>
+    </div>
+    <a href="mangas.html" class="bn-item" id="bnMangas">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      <span>Mangás</span>
+    </a>
+    <div class="bn-item" id="bnSettings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span>Config</span>
+    </div>
+  </nav>
+
+  <!-- Sidebar collapse toggle -->
+  <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Recolher sidebar">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+
+  <main class="container" id="paginaPrincipal">
+    <!-- Perfil header -->
+    <div class="perfil">
+      <div class="perfil-avatar-ring">
+        <img src="https://i.imgur.com/6VBx3io.png" alt="perfil">
+      </div>
+      <div class="perfil-text">
+        <h2>Marcos Duarte</h2>
+        <p>Minha lista de animes</p>
+      </div>
+      <div class="perfil-stats">
+        <div class="stat-item">
+          <div class="num" id="statAssistindo">0</div>
+          <div class="lbl">Assistindo</div>
+        </div>
+        <div class="stat-item">
+          <div class="num" id="statAssistidos">0</div>
+          <div class="lbl">Assistidos</div>
+        </div>
+        <div class="stat-item">
+          <div class="num" id="statPara">0</div>
+          <div class="lbl">Na fila</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Busca local -->
+    <div class="busca-local-wrap">
+      <div class="busca-local-inner">
+        <span class="busca-local-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M480 272C480 317.9 465.1 360.3 440 394.7L566.6 521.4C579.1 533.9 579.1 554.2 566.6 566.7C554.1 579.2 533.8 579.2 521.3 566.7L394.7 440C360.3 465.1 317.9 480 272 480C157.1 480 64 386.9 64 272C64 157.1 157.1 64 272 64C386.9 64 480 157.1 480 272zM272 416C351.5 416 416 351.5 416 272C416 192.5 351.5 128 272 128C192.5 128 128 192.5 128 272C128 351.5 192.5 416 272 416z"/></svg>
+        </span>
+        <input type="text" id="buscaLocal" placeholder="Buscar na minha lista...">
+        <button class="busca-local-clear" id="buscaLocalClear">✕</button>
+      </div>
+    </div>
+
+    <!-- BLOCO: Próximas temporadas -->
+    <div class="proximas-wrap" id="proximasWrap">
+      <div class="proximas-header" id="proximasHeader">
+        <div class="proximas-header-left">
+          <span class="proximas-icon">📡</span>
+          <div>
+            <div class="proximas-titulo">Próximas temporadas</div>
+            <div class="proximas-sub">Verifique se algum anime da sua lista tem novidades</div>
+          </div>
+        </div>
+        <div class="proximas-header-right">
+          <button class="proximas-btn" id="proximasVerificarBtn">Verificar</button>
+          <button class="proximas-fechar" id="proximasFecharBtn" title="Fechar">✕</button>
+        </div>
+      </div>
+
+      <!-- Estado: carregando -->
+      <div id="proximasCorpo" class="proximas-corpo">
+      <div class="proximas-loading" id="proximasLoading" style="display:none">
+        <div class="proximas-loading-bar"><div class="proximas-loading-fill" id="proximasLoadingFill"></div></div>
+        <div class="proximas-loading-texto" id="proximasLoadingTexto">Analisando sua lista…</div>
+      </div>
+
+      <!-- Estado: resultados -->
+      <div class="proximas-resultados" id="proximasResultados" style="display:none"></div>
+
+      <!-- Estado: vazio -->
+      <div class="proximas-vazio" id="proximasVazio" style="display:none">
+        <span class="proximas-vazio-icon">✨</span>
+        <span>Nenhuma novidade encontrada para os animes da sua lista.</span>
+      </div>
+
+      <!-- Rodapé com cache info -->
+      <div class="proximas-footer" id="proximasFooter" style="display:none">
+        <span id="proximasCacheInfo"></span>
+        <button class="proximas-atualizar" id="proximasAtualizarBtn">↺ Atualizar</button>
+      </div>
+      </div>
+    </div>
+
+    <!-- Categorias -->
+    <section class="categoria">
+      <div class="categoria-header">
+        <div class="categoria-header-left">
+          <span class="categoria-dot dot-assistindo"></span>
+          <h3>Assistindo</h3>
+        </div>
+        <div class="categoria-actions">
+          <button class="filter-btn" id="filterAssistindo" data-order="recentes">↓ Recentes</button>
+          <button class="expandir-btn" id="expandirAssistindo" data-lista="listaAssistindo" title="Expandir lista">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          </button>
+          <span class="categoria-count" id="countAssistindo">0</span>
+        </div>
+      </div>
+      <div class="lista" id="listaAssistindo"></div>
+    </section>
+
+    <section class="categoria">
+      <div class="categoria-header">
+        <div class="categoria-header-left">
+          <span class="categoria-dot dot-assistidos"></span>
+          <h3>Assistidos</h3>
+        </div>
+        <div class="categoria-actions">
+          <button class="filter-btn" id="filterAssistidos" data-order="recentes">↓ Recentes</button>
+          <button class="expandir-btn" id="expandirAssistidos" data-lista="listaAssistidos" title="Expandir lista">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          </button>
+          <span class="categoria-count" id="countAssistidos">0</span>
+        </div>
+      </div>
+      <div class="lista" id="listaAssistidos"></div>
+    </section>
+
+    <section class="categoria">
+      <div class="categoria-header">
+        <div class="categoria-header-left">
+          <span class="categoria-dot dot-para"></span>
+          <h3>Para assistir</h3>
+        </div>
+        <div class="categoria-actions">
+          <button class="filter-btn" id="filterPara" data-order="recentes">↓ Recentes</button>
+          <button class="expandir-btn" id="expandirPara" data-lista="listaPara" title="Expandir lista">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          </button>
+          <span class="categoria-count" id="countPara">0</span>
+        </div>
+      </div>
+      <div class="lista" id="listaPara"></div>
+    </section>
+  </main>
+
+  <button class="btn-add">+</button>
+
+  <!-- MODAL ADICIONAR -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+
+      <!-- Toggle Anime / Filme Anime -->
+      <div class="modal-tipo-toggle">
+        <button class="tipo-btn tipo-btn-ativo" id="tipoBtnAnime">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M64 320C64 178.6 178.6 64 320 64C461.4 64 576 178.6 576 320C576 461.4 461.4 576 320 576C178.6 576 64 461.4 64 320zM252.3 211.1C244.7 215.3 240 223.4 240 232L240 408C240 416.7 244.7 424.7 252.3 428.9C259.9 433.1 269.1 433 276.6 428.4L420.6 340.4C427.7 336 432.1 328.3 432.1 319.9C432.1 311.5 427.7 303.8 420.6 299.4L276.6 211.4C269.2 206.9 259.9 206.7 252.3 210.9z"/></svg>
+          Anime
+        </button>
+        <button class="tipo-btn" id="tipoBtnFilme">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M128 128C92.7 128 64 156.7 64 192L64 448C64 483.3 92.7 512 128 512L384 512C419.3 512 448 483.3 448 448L448 192C448 156.7 419.3 128 384 128L128 128zM496 400L569.5 458.8C573.7 462.2 578.9 464 584.3 464C597.4 464 608 453.4 608 440.3L608 199.7C608 186.6 597.4 176 584.3 176C578.9 176 573.7 177.8 569.5 181.2L496 240L496 400z"/></svg>
+          Filme Anime
+        </button>
+      </div>
+
+      <h2 id="modalTitulo">Adicionar Anime</h2>
+      <div class="modal-field">
+        <label id="labelNome">Nome do anime <span class="campo-obrigatorio">*</span></label>
+        <input type="text" id="nome" placeholder="Ex: Attack on Titan">
+      </div>
+      <div class="modal-field">
+        <div class="modal-field-header">
+          <label>Link da capa <span class="campo-obrigatorio">*</span></label>
+          <button class="galeria-btn" id="btnGaleriaAnime">Galeria</button>
+        </div>
+        <input type="text" id="capa" placeholder="https://...">
+        <input type="file" id="capaFileInput" accept="image/*" style="display:none">
+      </div>
+      <div class="modal-field">
+        <label>Nota (0 – 10) <span class="campo-obrigatorio">*</span></label>
+        <input type="number" id="nota" placeholder="Ex: 9.5" step="0.1" min="0" max="10">
+      </div>
+      <div class="modal-field">
+        <label>Lista</label>
+        <select id="status">
+          <option value="assistindo">Assistindo</option>
+          <option value="assistidos">Assistidos</option>
+          <option value="paraAssistir">Para assistir</option>
+        </select>
+      </div>
+
+      <!-- Campos exclusivos de Anime (série) -->
+      <div class="modal-field-row" id="camposEpisodios">
+        <div class="modal-field" style="flex:1">
+          <label>Total de eps.</label>
+          <input type="number" id="totalEps" placeholder="Ex: 24" min="0">
+        </div>
+        <div class="modal-field" style="flex:1">
+          <label>Eps. assistidos</label>
+          <input type="number" id="assistidosEps" placeholder="Ex: 12" min="0">
+        </div>
+      </div>
+
+      <!-- Campo exclusivo de Filme -->
+      <div class="modal-field" id="camposDuracao" style="display:none">
+        <label>Duração (min)</label>
+        <input type="number" id="duracao" placeholder="Ex: 120" min="0">
+      </div>
+
+      <div class="modal-field">
+        <label>Data de adição</label>
+        <input type="date" id="dataAdicao">
+      </div>
+
+      <div class="modal-botoes">
+        <button id="fechar">Cancelar</button>
+        <button id="salvar">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DETALHE -->
+  <!-- ══ MODAL DETALHE ANIME (redesign) ══ -->
+  <div class="modal-detalhe-overlay" id="modalDetalhe">
+    <div class="modal-detalhe">
+
+      <!-- ── Hero: capa + identidade ── -->
+      <div class="detalhe-hero">
+        <img id="detalheCapa" src="" class="detalhe-hero-img">
+        <div class="detalhe-hero-fade"></div>
+
+        <!-- Fechar — único controle permanente no hero -->
+        <button class="dt-close-btn" id="fecharDetalhe" title="Fechar">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+
+        <!-- Menu ⋯ opções (compartilhar, editar, excluir, mover) -->
+        <button class="dt-menu-btn" id="dtMenuBtn" title="Opções">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+        </button>
+
+        <!-- Dropdown do menu ⋯ -->
+        <div class="dt-menu-dropdown" id="dtMenuDropdown">
+          <button class="dt-menu-item" id="dtShareBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            Compartilhar
+          </button>
+          <button class="dt-menu-item" id="editBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Editar detalhes
+          </button>
+          <div class="dt-menu-divider"></div>
+          <div class="dt-menu-item dt-menu-move-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+            <select id="moverParaLista" class="dt-move-select">
+              <option value="assistindo">Assistindo</option>
+              <option value="assistidos">Assistidos</option>
+              <option value="paraAssistir">Para assistir</option>
+            </select>
+          </div>
+          <div class="dt-menu-divider"></div>
+          <button class="dt-menu-item dt-menu-delete" id="deleteBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            Excluir anime
+          </button>
+        </div>
+
+        <!-- Identidade: badge tipo + título + nota + gêneros -->
+        <div class="detalhe-hero-info">
+          <div id="detalheFilmeBadge" class="detalhe-filme-badge" style="display:none">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M128 128C92.7 128 64 156.7 64 192L64 448C64 483.3 92.7 512 128 512L384 512C419.3 512 448 483.3 448 448L448 192C448 156.7 419.3 128 384 128L128 128zM496 400L569.5 458.8C573.7 462.2 578.9 464 584.3 464C597.4 464 608 453.4 608 440.3L608 199.7C608 186.6 597.4 176 584.3 176C578.9 176 573.7 177.8 569.5 181.2L496 240L496 400z"/></svg>
+            Filme Anime
+          </div>
+          <h2 id="detalheNome"></h2>
+          <div class="detalhe-hero-meta">
+            <span id="detalheNota" class="detalhe-nota-badge"></span>
+            <div class="genero-tags-inline" id="detalheGenerosTags" style="display:none"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Corpo: progresso + anotação ── -->
+      <div class="detalhe-body">
+
+        <!-- Progresso de episódios -->
+        <div id="detalheEpisodios" class="detalhe-eps-wrap"></div>
+
+        <!-- Anotação pessoal com autosave -->
+        <div class="detalhe-obs-wrap">
+          <div class="detalhe-obs-header">
+            <label class="detalhe-obs-label" for="detalheObs">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              Anotação pessoal
+            </label>
+            <span class="detalhe-obs-autosave" id="obsAutosaveStatus">✓ Salvo</span>
+          </div>
+          <textarea id="detalheObs" placeholder="Só você vê isso — thoughts, spoilers, o que quiser..."></textarea>
+          <p class="detalhe-obs-hint">Salva automaticamente</p>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Modal de confirmação de exclusão ── -->
+  <div class="dt-confirm-overlay" id="dtConfirmOverlay">
+    <div class="dt-confirm-modal">
+      <div class="dt-confirm-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      </div>
+      <h3 class="dt-confirm-title">Excluir anime?</h3>
+      <p class="dt-confirm-desc" id="dtConfirmDesc">Isso removerá o anime da sua lista permanentemente.</p>
+      <div class="dt-confirm-actions">
+        <button class="dt-confirm-cancel" id="dtConfirmCancel">Cancelar</button>
+        <button class="dt-confirm-ok" id="dtConfirmOk">Sim, excluir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MODAL EDITAR DETALHES ══ -->
+  <div class="edit-modal-overlay" id="editModalOverlay">
+    <div class="edit-modal" id="editModal">
+
+      <!-- Bloco 1: Capa + Título + Nota -->
+      <div class="edit-hero">
+        <img class="edit-hero-bg" id="editHeroBg" src="" alt="">
+        <div class="edit-hero-fade"></div>
+        <button class="edit-close-btn" id="editCloseBtn" title="Fechar">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div class="edit-hero-info">
+          <div class="edit-field-inline">
+            <input type="text" id="editNomeInput" class="edit-title-input" placeholder="Título do anime">
+          </div>
+          <div class="edit-meta-row">
+            <div class="edit-nota-wrap">
+              <span class="edit-star">★</span>
+              <input type="number" id="editNotaInput" class="edit-nota-input" min="0" max="10" step="0.1" placeholder="—">
+              <span class="edit-nota-suffix">/ 10</span>
+            </div>
+            <div class="edit-tags-preview" id="editTagsPreview"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Corpo com scroll -->
+      <div class="edit-body">
+
+        <!-- Bloco 2: Progresso -->
+        <div class="edit-section" id="editProgressoSection">
+          <div class="edit-section-label">Progresso</div>
+          <div class="edit-progress-row">
+            <div class="edit-progress-bar-wrap">
+              <div class="edit-progress-bar-track">
+                <div class="edit-progress-bar-fill" id="editProgressFill"></div>
+              </div>
+            </div>
+            <div class="edit-progress-nums">
+              <input type="number" id="editAssistidosInput" class="edit-eps-input" min="0" placeholder="0">
+              <span class="edit-eps-sep">/</span>
+              <input type="number" id="editTotalInput" class="edit-eps-input" min="0" placeholder="—">
+              <span class="edit-eps-label">ep.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bloco 3: Detalhes + Anotação -->
+        <div class="edit-section">
+          <div class="edit-section-label">Detalhes</div>
+          <!-- input file oculto -->
+          <input type="file" id="editCapaFile" accept="image/*" style="display:none">
+          <!-- campo hidden que guarda a URL/base64 final -->
+          <input type="hidden" id="editCapaInput">
+
+          <div class="edit-capa-btn-row">
+            <div class="edit-capa-thumb-wrap" id="editCapaThumbWrap">
+              <img class="edit-capa-thumb" id="editCapaThumb" src="" alt="">
+              <div class="edit-capa-thumb-overlay">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              </div>
+            </div>
+            <div class="edit-capa-btn-info">
+              <span class="edit-detail-fieldlabel">Imagem de capa</span>
+              <button class="edit-capa-upload-btn" id="editCapaUploadBtn" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Trocar imagem
+              </button>
+              <span class="edit-capa-hint" id="editCapaHint">JPG, PNG, WEBP</span>
+            </div>
+          </div>
+          <div class="edit-detail-row">
+            <span class="edit-detail-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </span>
+            <div class="edit-detail-field">
+              <span class="edit-detail-fieldlabel">Adicionado em</span>
+              <input type="date" id="editDataInput" class="edit-detail-input">
+            </div>
+          </div>
+        </div>
+
+        <div class="edit-section">
+          <div class="edit-section-label">Anotações</div>
+          <textarea id="editObsInput" class="edit-obs-textarea" placeholder="Escreva algo…"></textarea>
+        </div>
+
+      </div>
+
+      <!-- Rodapé fixo -->
+      <div class="edit-footer">
+        <button class="edit-save-btn" id="editSaveBtn">✓ Salvar alterações</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SEARCH OVERLAY -->
+  <div id="searchOverlay">
+    <div class="search-panel">
+      <div class="search-header">
+        <span>🔍</span>
+        <input type="text" id="searchInput" placeholder="Buscar anime...">
+        <button id="btnCloseSearch">✖</button>
+      </div>
+      <div class="search-body">
+        <h4 id="searchLabel">Resultados</h4>
+        <div class="search-results" id="searchResults"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEARCH DETAIL -->
+  <div id="searchDetailOverlay">
+    <div class="search-detail-panel">
+      <button class="sd-close" id="sdClose">✖</button>
+      <h2 class="sd-title" id="sdTitle"></h2>
+      <div class="sd-image-wrap"><img id="sdImage" src="" alt=""></div>
+      <p class="sd-studio" id="sdStudio"></p>
+      <div class="genero-tags-inline" id="sdGenerosTags" style="display:none"></div>
+      <p class="sd-desc" id="sdDesc"></p>
+      <div class="sd-add-section">
+        <label>Adicionar à lista:</label>
+        <select id="sdStatus">
+          <option value="assistindo">Assistindo</option>
+          <option value="assistidos">Assistidos</option>
+          <option value="paraAssistir">Para assistir</option>
+        </select>
+        <label>Minha nota (0-10):</label>
+        <input type="number" id="sdNota" placeholder="Ex: 8.5" step="0.1" min="0" max="10">
+        <div class="sd-eps-row">
+          <div>
+            <label>Total de eps.:</label>
+            <input type="number" id="sdTotalEps" placeholder="—" min="0">
+          </div>
+          <div>
+            <label>Eps. assistidos:</label>
+            <input type="number" id="sdAssistidosEps" placeholder="0" min="0">
+          </div>
+        </div>
+        <label>Data de adição:</label>
+        <input type="date" id="sdDataAdicao">
+        <button id="sdAddBtn">+ Adicionar ao Organizador</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="paginaSettings">
+    <div class="cfg-wrap">
+
+      <!-- ── HEADER DE CONTA ── -->
+      <div class="cfg-header">
+        <!-- Linha: avatar + nome (usada para flex-row no desktop e topo no mobile) -->
+        <div class="cfg-header-profile-row">
+          <!-- Avatar clicável para trocar foto -->
+          <div class="cfg-header-avatar-wrap" id="cfgAvatarWrap" title="Alterar foto">
+            <div class="cfg-header-avatar-ring">
+              <img id="settingsAvatarPreview" src="https://i.imgur.com/6VBx3io.png" alt="avatar">
+            </div>
+            <div class="cfg-avatar-overlay">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
+            <input type="file" id="fotoFileInput" accept="image/*" style="display:none">
+          </div>
+          <!-- Nome editável inline -->
+          <div class="cfg-header-info">
+            <div class="cfg-name-wrap">
+              <input type="text" id="novoNome" class="cfg-header-name-input" placeholder="Seu nome" autocomplete="off" spellcheck="false">
+              <span class="cfg-name-edit-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </span>
+            </div>
+            <p class="cfg-header-sub">Preferências e dados</p>
+          </div>
+        </div>
+        <!-- Botão salvar (desktop: inline; mobile: largura total abaixo) -->
+        <button id="salvarSettings" class="cfg-btn cfg-btn--primary cfg-save-btn">Salvar</button>
+      </div>
+
+      <!-- Modal foto: URL avançada (oculto por padrão) -->
+      <div class="cfg-photo-modal" id="cfgPhotoModal">
+        <div class="cfg-photo-modal-inner">
+          <p class="cfg-photo-modal-label">Colar URL da imagem</p>
+          <div class="cfg-photo-modal-row">
+            <input type="text" id="novaFoto" class="cfg-input cfg-input-url" placeholder="https://...">
+            <button class="cfg-btn cfg-btn--secondary" id="cfgApplyUrl">Aplicar</button>
+          </div>
+          <button class="cfg-photo-modal-close" id="cfgPhotoModalClose">Cancelar</button>
+        </div>
+      </div>
+
+      <!-- ── GRADE DE SEÇÕES ── -->
+      <div class="cfg-grid">
+
+        <!-- Coluna esquerda: Conta + Aparência -->
+        <div class="cfg-col">
+
+          <!-- Seção: Aparência -->
+          <section class="cfg-section">
+            <h3 class="cfg-section-title">Aparência</h3>
+            <div class="cfg-card">
+              <div class="cfg-toggle-row">
+                <div class="cfg-toggle-info">
+                  <span class="cfg-toggle-title">Tema escuro</span>
+                  <span class="cfg-hint">Ideal para ambientes com pouca luz</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="darkModeToggle">
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+              <div class="cfg-divider"></div>
+              <div class="cfg-toggle-row">
+                <div class="cfg-toggle-info">
+                  <span class="cfg-toggle-title">Foto via URL</span>
+                  <span class="cfg-hint">Usar link externo como foto de perfil</span>
+                </div>
+                <button class="cfg-btn cfg-btn--ghost cfg-btn--sm" id="btnAbrirUrlFoto">Editar URL</button>
+              </div>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- Coluna direita: Dados -->
+        <div class="cfg-col">
+
+          <section class="cfg-section">
+            <h3 class="cfg-section-title">Dados</h3>
+
+            <!-- Exportar + agendamento integrados -->
+            <div class="cfg-card" id="cardExportar">
+              <div class="cfg-data-card">
+                <div class="cfg-data-info">
+                  <div class="cfg-data-icon cfg-data-icon--export">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  </div>
+                  <div>
+                    <p class="cfg-data-title">Exportar dados</p>
+                    <p class="cfg-hint">Salva sua lista, perfil e histórico em um arquivo</p>
+                  </div>
+                </div>
+                <button class="cfg-btn cfg-btn--secondary" id="btnExportarDados">Exportar</button>
+              </div>
+              <div class="cfg-divider"></div>
+              <!-- Agendamento dentro do card de exportar -->
+              <div class="cfg-toggle-row" id="scheduleRow">
+                <div class="cfg-toggle-info">
+                  <span class="cfg-toggle-title">Exportação automática</span>
+                  <span class="cfg-hint">Gera um backup toda semana automaticamente</span>
+                </div>
+                <label class="toggle-switch">
+                  <input type="checkbox" id="scheduleToggle">
+                  <span class="toggle-track"></span>
+                </label>
+              </div>
+              <div class="schedule-toast" id="scheduleToast">
+                <span class="schedule-toast-icon">🗓️</span>
+                <span>Exportação semanal ativada.</span>
+              </div>
+            </div>
+
+            <!-- Importar -->
+            <div class="cfg-card cfg-data-card" id="cardImportar">
+              <div class="cfg-data-info">
+                <div class="cfg-data-icon cfg-data-icon--import">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+                <div>
+                  <p class="cfg-data-title">Importar dados</p>
+                  <p class="cfg-hint">Restaure sua lista e perfil a partir de um arquivo</p>
+                </div>
+              </div>
+              <!-- Aviso antes de importar -->
+              <div class="cfg-import-warn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Isso substituirá todos os seus dados atuais.
+              </div>
+              <input type="file" id="importFileInput" accept=".json" style="display:none">
+              <label for="importFileInput" class="cfg-btn cfg-btn--warn">Selecionar arquivo</label>
+              <div class="import-success-badge" id="importSuccessBadge">
+                ✅ Dados importados com sucesso!
+              </div>
+            </div>
+
+          </section>
+        </div>
+      </div>
+
+      <!-- Footer da tela de configurações -->
+      <footer class="cfg-page-footer">
+        <p class="cfg-page-footer-hint">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          As alterações só são aplicadas ao clicar em <strong>Salvar</strong>.
+        </p>
+        <button id="btnVoltarSettings" class="cfg-back-link">← Voltar sem salvar</button>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- PÁGINA ESTATÍSTICAS -->
+  <div id="paginaStats">
+    <div class="stats-container">
+
+      <!-- Header -->
+      <div class="stats-header">
+        <h2 class="stats-titulo">Estatísticas</h2>
+        <p class="stats-sub" id="statsSubtitle"></p>
+      </div>
+
+      <!-- Seção 1: Animes deste mês -->
+      <div class="stats-card">
+        <div class="stats-card-header">
+          <span class="stats-card-icon">📅</span>
+          <div>
+            <h3 class="stats-card-title" id="statsMesNome"></h3>
+            <p class="stats-card-desc">Animes que você adicionou este mês</p>
+          </div>
+        </div>
+        <div class="stats-mes-lista" id="statsMesLista"></div>
+      </div>
+
+      <!-- Seção 2: Gráfico de gêneros -->
+      <div class="stats-card">
+        <div class="stats-card-header">
+          <span class="stats-card-icon">🎭</span>
+          <div>
+            <h3 class="stats-card-title">Seus gêneros favoritos</h3>
+            <p class="stats-card-desc">Com base nos animes da sua lista</p>
+          </div>
+        </div>
+        <div class="stats-generos" id="statsGeneros">
+          <p class="stats-empty">Adicione animes pela busca para ver seus gêneros!</p>
+        </div>
+      </div>
+
+      <!-- Seção 3: Preferência de duração -->
+      <div class="stats-card stats-card-highlight">
+        <div class="stats-duracao-wrap" id="statsDuracao"></div>
+      </div>
+
+      <!-- Seção 4: Tempo total assistido -->
+      <div class="stats-card stats-card-tempo">
+        <div class="stats-tempo-wrap" id="statsTempo"></div>
+      </div>
+
+      <div class="stats-card">
+        <div class="stats-card-header">
+          <span class="stats-card-icon">💾</span>
+          <div>
+            <h3 class="stats-card-title">Dados salvos</h3>
+            <p class="stats-card-desc">Espaço ocupado pelo Okiru no seu dispositivo</p>
+          </div>
+        </div>
+        <div id="statsStorage"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- STORY PREVIEW OVERLAY -->
+  <div id="storyPreviewOverlay">
+    <div class="story-preview-container">
+      <button class="story-preview-close" id="storyPreviewClose">✖</button>
+      <div class="story-card-wrap">
+        <div id="storyCard" class="story-card"></div>
+      </div>
+      <button class="story-download-btn" id="storyDownloadBtn">⬇ Baixar imagem</button>
+      <p class="story-hint">O arquivo PNG será salvo direto no seu dispositivo 📲</p>
+    </div>
+  </div>
+
+  <!-- X POST PREVIEW -->
+  <div id="xPostPreviewOverlay">
+    <div class="story-preview-container">
+      <button class="story-preview-close" id="xPostPreviewClose">✖</button>
+      <div class="xpost-card-wrap">
+        <div id="xPostCard" class="xpost-card"></div>
+      </div>
+      <button class="story-download-btn" id="xPostDownloadBtn">⬇ Baixar imagem para X</button>
+      <p class="story-hint">O arquivo PNG será salvo direto no seu dispositivo 📲</p>
+    </div>
+  </div>
+
+  <!-- SHARE MENU -->
+  <div id="shareOverlay">
+    <div class="share-panel">
+      <button class="share-close" id="shareClose">✖</button>
+      <div class="share-anime-preview" id="shareAnimePreview"></div>
+
+      <!-- STEP 1: tipo de compartilhamento -->
+      <div id="shareStep1">
+        <h3 class="share-title">Compartilhar</h3>
+        <p class="share-sub">Como você quer compartilhar?</p>
+        <div class="share-options">
+          <button class="share-opt-btn" id="shareBtnTexto">
+            <span class="share-opt-icon">💬</span>
+            <div class="share-opt-text">
+              <strong>Mensagem de texto</strong>
+              <span>WhatsApp, Instagram DM...</span>
+            </div>
+            <span class="share-opt-arrow">›</span>
+          </button>
+          <button class="share-opt-btn share-opt-story" id="shareBtnStory">
+            <span class="share-opt-icon">🎌</span>
+            <div class="share-opt-text">
+              <strong>Imagem para Stories</strong>
+              <span>Gera card visual para Instagram</span>
+            </div>
+            <span class="share-opt-arrow">›</span>
+          </button>
+          <button class="share-opt-btn share-opt-xpost" id="shareBtnXPost">
+            <span class="share-opt-icon">𝕏</span>
+            <div class="share-opt-text">
+              <strong>Imagem para Post no X</strong>
+              <span>Gera card otimizado para o X</span>
+            </div>
+            <span class="share-opt-arrow">›</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- STEP 2: seleção de badges -->
+      <div id="shareStep2" style="display:none">
+        <button class="share-step2-back" id="shareStep2Back">← Voltar</button>
+        <h3 class="share-title">Badges na imagem</h3>
+        <p class="share-sub">Escolha quais badges mostrar</p>
+        <div id="shareBadgeList" class="share-badge-list"></div>
+        <button class="share-gerar-btn" id="shareGerarBtn">Gerar imagem →</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <!-- ── Core (ordem importa) ── -->
+  <script src="js/store.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/modal-add.js"></script>
+  <script src="js/modal-detalhe.js"></script>
+  <script src="js/compartilhar.js"></script>
+  <script src="js/busca.js"></script>
+  <script src="js/proximas.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/nav.js"></script>
+  <!-- ── Features ── -->
+  <script src="js/badges.js"></script>
+  <script src="js/tutorial.js"></script>
+  <script src="js/temporadas.js"></script>
+  <script src="js/expandir.js"></script>
+</body>
+</html>
