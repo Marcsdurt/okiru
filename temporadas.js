@@ -97,59 +97,43 @@
     if (anime) renderSecao(anime);
   }
 
-  /* ─── DETECTAR RERENDERIZAÇÃO DAS LISTAS via MutationObserver ───
-     script.js chama renderizarAnimes() direto (não via window),
-     então observamos quando #listaAssistindo é limpa/repopulada.
+  /* ─── HOOK EM window.renderizarAnimes ───
+     Intercepta a função de render para filtrar temporadas-filho
+     antes que os cards sejam criados. Isso garante que as listas
+     e contadores nunca incluam animes vinculados como temporada.
   ─── */
-  (function() {
-    const listaEl = document.getElementById('listaAssistindo');
-    if (!listaEl) return;
+  (function hookRender() {
+    // Aguarda window.renderizarAnimes estar disponível (definido em render.js)
+    if (typeof window.renderizarAnimes !== 'function') {
+      setTimeout(hookRender, 50);
+      return;
+    }
 
-    let _patchPendente = false;
+    const _orig = window.renderizarAnimes;
 
-    const obs = new MutationObserver(() => {
-      if (_patchPendente) return;
-      _patchPendente = true;
-      // Debounce: aguarda a render terminar antes de patchear
-      // Dois rAF para garantir que o script.js terminou de popular todos os containers
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          obs.disconnect(); // pausa observer para evitar loop ao remover cards
-          patchDOM();
-          obs.observe(listaEl, { childList: true }); // retoma
-          _patchPendente = false;
-        });
-      });
-    });
-    obs.observe(listaEl, { childList: true });
-  })();
+    window.renderizarAnimes = function () {
+      // Filtra temporariamente os filhos do array global
+      const filhosIds = new Set(
+        (window.animes || [])
+          .filter(a => a.temporadaDe)
+          .map(a => a.id)
+      );
 
-  function patchDOM() {
-    const arr = lerAnimes();
-    const filhosNomes = new Set(arr.filter(a => a.temporadaDe).map(a => a.nome.trim().toLowerCase()));
-    if (filhosNomes.size === 0) return;
+      if (filhosIds.size === 0) {
+        _orig.apply(this, arguments);
+        return;
+      }
 
-    ['listaAssistindo','listaAssistidos','listaPara'].forEach(cid => {
-      const el = document.getElementById(cid);
-      if (!el) return;
-      el.querySelectorAll('.card').forEach(card => {
-        const t = card.querySelector('.card-title');
-        if (t && filhosNomes.has(t.textContent.trim().toLowerCase())) card.remove();
-      });
-    });
+      // Esconde os filhos do array global durante o render
+      const todosAnimes = window.animes;
+      window.animes = todosAnimes.filter(a => !filhosIds.has(a.id));
 
-    const map = {
-      listaAssistindo: ['countAssistindo','statAssistindo'],
-      listaAssistidos: ['countAssistidos','statAssistidos'],
-      listaPara:       ['countPara','statPara'],
+      _orig.apply(this, arguments);
+
+      // Restaura o array completo
+      window.animes = todosAnimes;
     };
-    Object.entries(map).forEach(([cid, ids]) => {
-      const el = document.getElementById(cid);
-      if (!el) return;
-      const n = el.querySelectorAll('.card').length;
-      ids.forEach(id => { const e2 = document.getElementById(id); if (e2) e2.textContent = n; });
-    });
-  }
+  })();
 
   /* ─── RENDER DA SEÇÃO ─── */
   let _sec = null;
